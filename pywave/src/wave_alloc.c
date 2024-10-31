@@ -2,7 +2,7 @@
 #include <stdio.h>
 // #include <complex.h>
 
-#include "npre_alloc.h"
+#include "wave_alloc.h"
 
 void *np_alloc (size_t n    /* number of elements */, 
 			  size_t size /* size of one element */)

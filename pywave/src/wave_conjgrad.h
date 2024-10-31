@@ -1,7 +1,7 @@
 #ifndef _conjgrad_h
 #define _conjgrad_h
 
-#include "npre_dtype.h"
+#include "wave_dtype.h"
 #include <stdbool.h>
 
 // #include "_bool.h"

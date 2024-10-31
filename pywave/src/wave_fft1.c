@@ -8,13 +8,13 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include "npre_alloc.h"
+#include "wave_alloc.h"
 
 #ifndef KISS_FFT_H
-#include "npre_kissfft.h"
+#include "wave_kissfft.h"
 #endif
 
-#include "npre_komplex.h"
+#include "wave_komplex.h"
 
 #define SF_PI (3.14159265358979323846264338328)
 /*above is the including part*/

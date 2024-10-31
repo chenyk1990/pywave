@@ -1,13 +1,13 @@
 /* Complex number operations */
 #include <math.h>
 
-#include "npre_komplex.h"
+#include "wave_komplex.h"
 
 #ifndef KISS_FFT_H
-#include "npre_kissfft.h"
+#include "wave_kissfft.h"
 #endif
 
-#include "npre_dtype.h"
+#include "wave_dtype.h"
 
 #define SF_PI (3.14159265358979323846264338328)
 

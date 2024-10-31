@@ -3,7 +3,7 @@
 #ifndef _cdivn_h
 #define _cdivn_h
 
-#include "npre_conjgrad.h"
+#include "wave_conjgrad.h"
 
 void cmultidivn_init(int nw            /* number of components */, 
 		       int ndim          /* number of dimensions */, 

@@ -3,7 +3,7 @@
 #define DTYPE_H
 
 #ifndef KISS_FFT_H
-#include "npre_kissfft.h"
+#include "wave_kissfft.h"
 #endif
 
 typedef struct {

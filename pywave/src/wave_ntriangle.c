@@ -7,11 +7,11 @@ for both real (future?) and complex values
 // #include <rsf.h>
 
 #include <stdbool.h>
-#include "npre_dtype.h"
-#include "npre_komplex.h"
-#include "npre_alloc.h"
-#include "npre_triangle.h"
-#include "npre_ntriangle.h"
+#include "wave_dtype.h"
+#include "wave_komplex.h"
+#include "wave_alloc.h"
+#include "wave_triangle.h"
+#include "wave_ntriangle.h"
 
 // #ifndef ntriangle_h
 // 

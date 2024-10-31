@@ -4,15 +4,15 @@ for both real (future?) and complex values
 
 
 #include <stdbool.h>
-#include "npre_conjgrad.h"
-#include "npre_dtype.h"
-#include "npre_komplex.h"
-#include "npre_alloc.h"
-#include "npre_triangle.h"
-#include "npre_trianglen.h"
-#include "npre_ntriangle.h"
-#include "npre_ntrianglen.h"
-#include "npre_decart.h"
+#include "wave_conjgrad.h"
+#include "wave_dtype.h"
+#include "wave_komplex.h"
+#include "wave_alloc.h"
+#include "wave_triangle.h"
+#include "wave_trianglen.h"
+#include "wave_ntriangle.h"
+#include "wave_ntrianglen.h"
+#include "wave_decart.h"
 
 // #ifndef ntriangle_h
 // struct CNtriangle {

@@ -1,7 +1,7 @@
 #ifndef trianglen_h
 #define trianglen_h
 
-#include "npre_dtype.h"
+#include "wave_dtype.h"
 
 void np_ctrianglen_init (int ndim  /* number of dimensions */, 
 			int *nbox /* triangle radius [ndim] */, 

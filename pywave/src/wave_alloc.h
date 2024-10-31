@@ -1,10 +1,10 @@
 
 
 #ifndef KISS_FFT_H
-#include "npre_kissfft.h"
+#include "wave_kissfft.h"
 #endif
 
-#include "npre_dtype.h"
+#include "wave_dtype.h"
 
 void *np_alloc (size_t n    /* number of elements */, 
 			  size_t size /* size of one element */);

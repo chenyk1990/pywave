@@ -10,11 +10,11 @@
 #define SF_MAX_DIM 9
 #define SF_PI (3.14159265358979323846264338328)
 
-#include "npre_alloc.h"
-#include "npre_komplex.h"
+#include "wave_alloc.h"
+#include "wave_komplex.h"
 
 #ifndef KISS_FFT_H
-#include "npre_kissfft.h"
+#include "wave_kissfft.h"
 #endif
 
 float gauss(int n, int m)

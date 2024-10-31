@@ -7,7 +7,7 @@
 #include <unistd.h>
 /*^*/
 
-#include "npre_decart.h"
+#include "wave_decart.h"
 
 void np_line2cart(int dim         /* number of dimensions */, 
 		  const int* nn /* box size [dim] */, 

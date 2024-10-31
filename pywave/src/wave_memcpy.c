@@ -3,9 +3,9 @@
   Copyright (C) 2016 Yangkang Chen
 */
 
-// #include"npre_memcpy.h"
-#include "npre_dtype.h"
-#include "npre_komplex.h"
+// #include"wave_memcpy.h"
+#include "wave_dtype.h"
+#include "wave_komplex.h"
 
 /*real value functions*/
 void mcp(float *dst /*destination*/, 

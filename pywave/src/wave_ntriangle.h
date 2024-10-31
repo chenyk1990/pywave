@@ -2,7 +2,7 @@
 #define ntriangle_h
 
 
-#include "npre_dtype.h"
+#include "wave_dtype.h"
 
 struct CNtriangle {
     np_complex *tmp;

@@ -1,12 +1,12 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include "npre_alloc.h"
-#include "npre_conjgrad.h"
-#include "npre_komplex.h"
+#include "wave_alloc.h"
+#include "wave_conjgrad.h"
+#include "wave_komplex.h"
 
 #ifndef KISS_FFT_H
-#include "npre_kissfft.h"
+#include "wave_kissfft.h"
 #endif
 
 static int np, nx, nr, nd;

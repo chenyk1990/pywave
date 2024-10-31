@@ -5,7 +5,7 @@
 // #include "_bool.h"
 // #include "komplex.h"
 
-#include "npre_dtype.h"
+#include "wave_dtype.h"
 
 
 struct np_Ctriangle {

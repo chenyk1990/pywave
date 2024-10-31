@@ -1,7 +1,7 @@
 #ifndef _memcpy_h
 #define _memcpy_h
 
-#include "npre_dtype.h"
+#include "wave_dtype.h"
 
 /*real value functions*/
 void mcp(float *dst /*destination*/, 

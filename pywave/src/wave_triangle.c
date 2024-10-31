@@ -1,16 +1,10 @@
 /* Triangle smoothing for complex numbers */
-
-// #include "ctriangle.h"
-// #include "alloc.h"
-// 
-// #include "_bool.h"
-// #include "komplex.h"
 /*^*/
 #include <stdbool.h>
-#include "npre_dtype.h"
-#include "npre_komplex.h"
-#include "npre_alloc.h"
-#include "npre_triangle.h"
+#include "wave_dtype.h"
+#include "wave_komplex.h"
+#include "wave_alloc.h"
+#include "wave_triangle.h"
 
 
 static void fold (int o, int d, int nx, int nb, int np, 
