@@ -35,7 +35,23 @@ ftfa_module = Extension('ftfacfun', sources=['pywave/src/tf.c',
                                                 'pywave/src/wave_memcpy.c',
                                                 'pywave/src/wave_fft1.c'],
                                                 include_dirs=[numpy.get_include()])
-                                                
+
+aps_module = Extension('apscfun', sources=['pywave/src/aps.c',
+                                                'pywave/src/wave_alloc.c',
+                                                'pywave/src/wave_kissfft.c',
+                                                'pywave/src/wave_komplex.c',
+                                                'pywave/src/wave_conjgrad.c',
+                                                'pywave/src/wave_cdivn.c',
+                                                'pywave/src/wave_triangle.c',
+                                                'pywave/src/wave_trianglen.c',
+                                                'pywave/src/wave_ntriangle.c',
+                                                'pywave/src/wave_ntrianglen.c',
+                                                'pywave/src/wave_decart.c',
+                                                'pywave/src/wave_win.c',
+                                                'pywave/src/wave_memcpy.c',
+                                                'pywave/src/wave_fft1.c'],
+                                                include_dirs=[numpy.get_include()])
+                                                                                       
 setup(
     name="pywave",
     version="0.0.2",
@@ -45,7 +61,7 @@ setup(
     author="pywave developing team",
     author_email="chenyk2016@gmail.com",
     url="https://github.com/chenyk1990/pywave",
-    ext_modules=[ftfa_module],
+    ext_modules=[ftfa_module,aps_module],
     packages=['pywave'],
     include_package_data=True,
     zip_safe=False,
