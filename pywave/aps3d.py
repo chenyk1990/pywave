@@ -1,7 +1,7 @@
 import numpy as np
 from apscfun import *
 
-def aps3d(vel,nt=1501,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81],nbt=30,ct=0.01,jsnap=4,abc=True,ifsnaps=False,ps=True,verb=True):
+def aps3d(vel,nt=1501,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81],nbt=30,ct=0.01,jsnap=4,abc=True,ifsnaps=False,ps=True,verb=True,tri=False):
 	'''
 	aps3d: 3D acoustic wavefield modeling using the pseudo-spectral method  
 	
@@ -12,6 +12,9 @@ def aps3d(vel,nt=1501,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81],nbt=30,ct=
 	ay: axis y [oy,dy,ny]
 	az: axis z [oz,dz,nz]
 	verb
+	
+	tri: if choose time reversal imaging (True: TRI; False: Forward modeling)
+	
 	
 	OUTPUT
 	data
@@ -35,7 +38,7 @@ def aps3d(vel,nt=1501,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81],nbt=30,ct=
 	oy=ay[0];dy=ay[1];ny=ay[2];
 	oz=az[0];dz=az[1];nz=az[2];
 	
-	dout=aps3dc(vel,nt,nx,ny,nz,verb,jsnap,ifsnaps,abc,nbt,ct,dt,ox,dx,oy,dy,oz,dz);
+	dout=aps3dc(vel,tri,nt,nx,ny,nz,verb,jsnap,ifsnaps,abc,nbt,ct,dt,ox,dx,oy,dy,oz,dz);
 	
 	
 
