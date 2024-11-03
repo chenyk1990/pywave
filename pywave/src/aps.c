@@ -13,7 +13,7 @@
 #include "wave_alloc.h"
 #include "wave_komplex.h"
 #include "wave_psp.h"
-#include "wave_abs.h"
+#include "wave_abc.h"
 
 #ifndef KISS_FFT_H
 #include "wave_kissfft.h"

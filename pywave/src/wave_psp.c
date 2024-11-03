@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "wave_alloc.h"
 #include "wave_ricker.h"
-#include "wave_abs.h"
+#include "wave_abc.h"
 #include "wave_komplex.h"
 #include "wave_psp.h"
 
