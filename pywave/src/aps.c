@@ -53,9 +53,9 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
     /*source parameters*/
     int src; /*source type*/
     int nt,ntsnap;
-    float dt,*f0,*t0,*A;
+    float *f0,*t0,*A;
     /*misc*/
-    bool verb, ps, tri; /*tri: time-reversal imaging*/
+    bool ps, tri; /*tri: time-reversal imaging*/
     float vref;
 
     psmpar par;
@@ -63,8 +63,11 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
     int it;
     float *vel,*vel2,***dat,**dat_v,**wvfld,*img; /*velocity profile*/
     
+    float oz,ox,oy; 
+    int ifsnaps;
+    
     /*data and parameters interface*/
-	PyArg_ParseTuple(args, "Oiiiiiiiff", &f1,&tri,&n1,&nx,&ny,&nz,&verb,&jsnap,&ifsnaps,&abs,&nbt,ct,dt,ox,dx,oy,dy,oz,dz);
+	PyArg_ParseTuple(args, "Oiiiiiiiff", &f1,&tri,&nt,&nx,&ny,&nz,&verb,&jsnap,&ifsnaps,&abs,&nbt,ct,dt,ox,dx,oy,dy,oz,dz);
 
 // 	dout=aps3dc(vel,tri,nt,nx,ny,nz,verb,jsnap,ifsnaps,abc,nbt,ct,dt,ox,dx,oy,dy,oz,dz);
 	
@@ -75,7 +78,7 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
     
 	ndata=n1;
 
-    int i1, iw, nt, nw, i2, n2, n12, n1w;
+    int i1, iw, nw, i2, n2, n12, n1w;
     int *rect;
     float t, w, w0, dw, mean=0.0f;
     float *mm, *ww;
@@ -417,10 +420,10 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
 // 	np_floatwrite(dat_v[0],gpl_v*nt,Fd_v);
     }
 
-    if (jsnap>0)
+//     if (jsnap>0)
 //       np_floatwrite(wvfld[0],nz1*nx1*ny1*ntsnap,snaps);
       
-    if(ifvpad)
+//     if(ifvpad)
 //     	np_floatwrite(vel2,nz*nx*ny,Fvpad);
       
 //     exit (0);
@@ -468,8 +471,8 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
     PyArrayObject *vecout;
     npy_intp dims[2];
     
-    if(!inv)
-    {
+//     if(!inv)
+//     {
 
         for(i=0;i<ndata*nw;i++)
         {
@@ -485,15 +488,15 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
 	(*((float*)PyArray_GETPTR1(vecout,1+ndata*nw*2))) = dw;
 	(*((float*)PyArray_GETPTR1(vecout,2+ndata*nw*2))) = nw;
 	
-	}else{
+// 	}else{
 	
 	dims[0]=n1;dims[1]=1;
 	/* Parse tuples separately since args will differ between C fcns */
 	/* Make a new double vector of same dimension */
-	vecout=(PyArrayObject *) PyArray_SimpleNew(1,dims,NPY_FLOAT);
-	for(i=0;i<dims[0];i++)
-		(*((float*)PyArray_GETPTR1(vecout,i))) = inp[i];
-	}
+// 	vecout=(PyArrayObject *) PyArray_SimpleNew(1,dims,NPY_FLOAT);
+// 	for(i=0;i<dims[0];i++)
+// 		(*((float*)PyArray_GETPTR1(vecout,i))) = inp[i];
+// 	}
 	
 	return PyArray_Return(vecout);
 	
