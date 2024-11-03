@@ -37,6 +37,9 @@ ftfa_module = Extension('ftfacfun', sources=['pywave/src/tf.c',
                                                 include_dirs=[numpy.get_include()])
 
 aps_module = Extension('apscfun', sources=['pywave/src/aps.c',
+                                                'pywave/src/wave_psp.c',
+                                                'pywave/src/wave_ricker.c',
+                                                'pywave/src/wave_fft3.c',
                                                 'pywave/src/wave_alloc.c',
                                                 'pywave/src/wave_kissfft.c',
                                                 'pywave/src/wave_komplex.c',

@@ -34,7 +34,7 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
     int ndim;
     float *data;
     
-    int niter,verb,rect0,n1,ntw,opt,sym,window;
+    int niter,verb,rect0,n1,ntw,opt=0,sym,window;
     float dt,alpha,ot;
     int ifb,inv;
     
@@ -69,7 +69,7 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
     int ifsnaps;
     
     /*data and parameters interface*/
-	PyArg_ParseTuple(args, "OOiiiiiiiff", &f1,&f2,&tri,&nt,&nx,&ny,&nz,&ns,&verb,&jsnap,&ifsnaps,&abs,&nbt,ct,dt,ox,dx,oy,dy,oz,dz);
+	PyArg_ParseTuple(args, "OOiiiiiiiiiiiffffffff", &f1,&f2,&tri,&nt,&nx,&ny,&nz,&ns,&verb,&jsnap,&ifsnaps,&abc,&nbt,&ct,&dt,&ox,&dx,&oy,&dy,&oz,&dz);
 
 // 	source=np.concatenate([sx,sy,sz,f,t,A],axis=0,dtype='float32'); #remember: source size is ns*6
 // 	
@@ -79,47 +79,54 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
 
 	printf("tri=%d,nt=%d,nx=%d,ny=%d,nz=%d,ns=%d\n",tri,nt,nx,ny,nz,ns);
 	
-	
+	int nw;
+    int i1, iw, i2, n2, n12, n1w;
+    int *rect;
+    float t, w, w0, dw, mean=0.0f;
+    float *mm, *ww;
+    
     int i, j, m;
     if (ntw%2 == 0)
         ntw = (ntw+1);
     m = (ntw-1)/2;
-    
-	ndata=n1;
 
-    int i1, iw, nw, i2, n2, n12, n1w;
-    int *rect;
-    float t, w, w0, dw, mean=0.0f;
-    float *mm, *ww;
+	printf("nw=%d,nt=%d 11\n",nw,nt);
+	
+	if(tri==0)
+	{ndata=nx*ny*nz;}
+	else
+	{ndata=nx*ny*nt;}
+
+
+// 	printf("n1=%d,nw=%d,nt=%d 22\n",n1,nw,nt);
+	
+//     if(opt)
+// 	    nt = 2*kiss_fft_next_fast_size((ntw+1)/2);
+//     else
+//         nt=ntw;
+//     if (nt%2) nt++;
+//     nw = nt/2+1;
+//     dw = 1./(nt*dt);
+// 	w0 = 0.;
+
+// 	printf("n1=%d,nw=%d,nt=%d 33\n",n1,nw,nt);
+// 	printf("dw=%g,w0=%g,dt=%g\n",dw,w0,dt);
+    
+//     kiss_fftr_cfg cfg;
+//     kiss_fft_cpx *pp, ce, *outp;
+//     float *p, *inp, *tmp;
+//     float wt, shift;
 
     
-    if(opt)
-	    nt = 2*kiss_fft_next_fast_size((ntw+1)/2);
-    else
-        nt=ntw;
-    if (nt%2) nt++;
-    nw = nt/2+1;
-    dw = 1./(nt*dt);
-	w0 = 0.;
-
-	printf("n1=%d,nw=%d,nt=%d\n",n1,nw,nt);
-	printf("dw=%g,w0=%g,dt=%g\n",dw,w0,dt);
+//     p = np_floatalloc(nt);
+//     pp = (kiss_fft_cpx*) np_complexalloc(nw);
+//     cfg = kiss_fftr_alloc(nt,inv?1:0,NULL,NULL);
+//     wt = sym? 1./sqrtf((float) nt): 1.0/nt;
+// 
+//     printf("sym=%d,wt=%g\n",sym,wt);
     
-    kiss_fftr_cfg cfg;
-    kiss_fft_cpx *pp, ce, *outp;
-    float *p, *inp, *tmp;
-    float wt, shift;
-
-    
-    p = np_floatalloc(nt);
-    pp = (kiss_fft_cpx*) np_complexalloc(nw);
-    cfg = kiss_fftr_alloc(nt,inv?1:0,NULL,NULL);
-    wt = sym? 1./sqrtf((float) nt): 1.0/nt;
-
-    printf("sym=%d,wt=%g\n",sym,wt);
-    
-    inp = np_floatalloc(n1);
-    tmp = np_floatalloc(n1*nw*2);
+//     inp = np_floatalloc(n1);
+//     tmp = np_floatalloc(n1*nw*2);
 //     outp = (kiss_fft_cpx*) np_complexalloc(n1*nw);
 
     arrf1 = PyArray_FROM_OTF(f1, NPY_FLOAT, NPY_IN_ARRAY);
@@ -139,9 +146,9 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
     /*reading data*/
     for (i=0; i<ndata; i++)
     {
-        inp[i]=*((float*)PyArray_GETPTR1(arrf1,i));
+        vel[i]=*((float*)PyArray_GETPTR1(arrf1,i));
     }
-	printf("ndata=%d,ntw=%d\n",ndata,ntw);
+	printf("input data done, ndata=%d\n",ndata);
         
 
 
@@ -181,6 +188,16 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
 //       if(!np_getfloat("crx",&crx)) crx = ct;
 //       if(!np_getfloat("cly",&cly)) cly = ct;
 //       if(!np_getfloat("cry",&cry)) cry = ct;
+
+	nblx = nbt;
+	nbrx = nbt;
+	nbly = nbt;
+	nbry = nbt;
+	clx = ct;
+	crx = ct;
+	cly = ct;
+	cry = ct;
+	
     } else {
       nbt = 0; nbb = 0; nblx = 0; nbrx = 0; nbly = 0; nbry = 0;
       ct = 0; cb = 0; clx = 0; crx = 0; cly = 0; cry = 0;
@@ -274,6 +291,9 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
 //     if (gpz==-1) gpz = nbt;
 //     if (gplx==-1) gplx = nx1;
 //     if (gply==-1) gply = ny1;
+	gplx = nx1;
+	gply = ny1;
+	
 //     if (gpx_v==-1) gpx_v = nblx;
 //     if (gpy_v==-1) gpy_v = nbly;
 //     if (gpz_v==-1) gpz_v = nbt;
@@ -353,6 +373,9 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
     
 //     if (tri && NULL==Fd) {dat = NULL;  }
 //     else { dat = np_floatalloc3(nt,gplx,gply);}
+
+if(tri==0)
+dat=np_floatalloc3(nt,gplx,gply);
 
 //     if (NULL!=Fd_v) dat_v = np_floatalloc2(nt,gpl_v);
 //     else dat_v = NULL;
@@ -471,7 +494,7 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
 	
 	
 	
-	
+	printf("before output\n");
 	
 
 	/*sub-function goes here*/
@@ -483,19 +506,19 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
 //     if(!inv)
 //     {
 
-        for(i=0;i<ndata*nw;i++)
-        {
-            tmp[i]=outp[i].r;
-            tmp[i+ndata*nw]=outp[i].i;
-        }
-	dims[0]=ndata*nw*2+3;dims[1]=1;
+//         for(i=0;i<ndata*nw;i++)
+//         {
+//             tmp[i]=outp[i].r;
+//             tmp[i+ndata*nw]=outp[i].i;
+//         }
+	dims[0]=nt*nx1*ny1;dims[1]=1;
 	vecout=(PyArrayObject *) PyArray_SimpleNew(1,dims,NPY_FLOAT);
-	for(i=0;i<ndata*nw*2;i++)
-		(*((float*)PyArray_GETPTR1(vecout,i))) = tmp[i];
+	for(i=0;i<nt*nx1*ny1;i++)
+		(*((float*)PyArray_GETPTR1(vecout,i))) = dat[0][0][i];
 	printf("w0=%g,dw=%g,nw=%d\n",w0,dw,nw);
-	(*((float*)PyArray_GETPTR1(vecout,0+ndata*nw*2))) = w0;
-	(*((float*)PyArray_GETPTR1(vecout,1+ndata*nw*2))) = dw;
-	(*((float*)PyArray_GETPTR1(vecout,2+ndata*nw*2))) = nw;
+// 	(*((float*)PyArray_GETPTR1(vecout,0+ndata*nw*2))) = w0;
+// 	(*((float*)PyArray_GETPTR1(vecout,1+ndata*nw*2))) = dw;
+// 	(*((float*)PyArray_GETPTR1(vecout,2+ndata*nw*2))) = nw;
 	
 // 	}else{
 	

@@ -59,12 +59,13 @@ def aps3d(vel,nt=1501,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81],ns=3,sx=[3
 	t=np.array(t);
 	A=np.array(A);
 	
+# 	vel=vel.flatten(order='F',dtype='float32')
 	source=np.concatenate([sx,sy,sz,f,t,A],axis=0,dtype='float32'); #remember: source size is ns*6
 	
-	
+	print(nt,nx,ny,nz)
 	dout=aps3dc(vel,source,tri,nt,nx,ny,nz,ns,verb,jsnap,ifsnaps,abc,nbt,ct,dt,ox,dx,oy,dy,oz,dz);
 	
-	
+# 	tri,&nt,&nx,&ny,&nz,&ns,&verb,&jsnap,&ifsnaps,&abs,&nbt,ct,dt,ox,dx,oy,dy,oz,dz);
 	
 
 	return 
