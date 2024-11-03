@@ -26,7 +26,9 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
     
     PyObject *f1=NULL;
     PyObject *arrf1=NULL;
-
+    PyObject *f2=NULL;
+    PyObject *arrf2=NULL;
+    
 	int ndata;	/*integer parameter*/
 	float fpar; /*float parameter*/
     int ndim;
@@ -67,9 +69,16 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
     int ifsnaps;
     
     /*data and parameters interface*/
-	PyArg_ParseTuple(args, "Oiiiiiiiff", &f1,&tri,&nt,&nx,&ny,&nz,&verb,&jsnap,&ifsnaps,&abs,&nbt,ct,dt,ox,dx,oy,dy,oz,dz);
+	PyArg_ParseTuple(args, "OOiiiiiiiff", &f1,&f2,&tri,&nt,&nx,&ny,&nz,&ns,&verb,&jsnap,&ifsnaps,&abs,&nbt,ct,dt,ox,dx,oy,dy,oz,dz);
 
+// 	source=np.concatenate([sx,sy,sz,f,t,A],axis=0,dtype='float32'); #remember: source size is ns*6
+// 	
+// 	dout=aps3dc(vel,source,tri,nt,nx,ny,nz,ns,verb,jsnap,ifsnaps,abc,nbt,ct,dt,ox,dx,oy,dy,oz,dz);
+	
 // 	dout=aps3dc(vel,tri,nt,nx,ny,nz,verb,jsnap,ifsnaps,abc,nbt,ct,dt,ox,dx,oy,dy,oz,dz);
+
+	printf("tri=%d,nt=%d,nx=%d,ny=%d,nz=%d,ns=%d\n",tri,nt,nx,ny,nz,ns);
+	
 	
     int i, j, m;
     if (ntw%2 == 0)
@@ -136,7 +145,7 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
         
 
 
-
+	
 
 
 
@@ -523,7 +532,7 @@ static struct PyModuleDef ftfacfunModule = {
 };
 
 /*runs while initializing and calls module creation function.*/
-PyMODINIT_FUNC PyInit_ftfacfun(void){
+PyMODINIT_FUNC PyInit_apscfun(void){
   
     PyObject *module = PyModule_Create(&ftfacfunModule);
     import_array();
