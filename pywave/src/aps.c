@@ -164,7 +164,7 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
 //     if(!np_getbool("abc",&abc)) abc=false; /* absorbing flag */
     
     cmplx=0;
-	jsnap=0;
+// 	jsnap=0;
 	pad1=1;
 	abc=1;
 	src=0;
@@ -331,10 +331,11 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
 //     if (gpy_v==-1) gpy_v = nbly;
 //     if (gpz_v==-1) gpz_v = nbt;
 //     if (gpl_v==-1) gpl_v = nz1;
-//     ntsnap=0;
-//     if (jsnap)
-//         for (it=0;it<nt;it++)
-//             if (it%jsnap==0) ntsnap++;
+    ntsnap=0;
+    if (jsnap)
+        for (it=0;it<nt;it++)
+            if (it%jsnap==0) ntsnap++;
+            
 //     if (tri) { /*output final wavefield*/
 //       np_setn(az,nz1);
 //       np_setn(ax,nx1);
@@ -535,19 +536,28 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
     /*Below is the output part*/
     PyArrayObject *vecout;
     npy_intp dims[2];
-    
-//     if(!inv)
-//     {
 
-//         for(i=0;i<ndata*nw;i++)
-//         {
-//             tmp[i]=outp[i].r;
-//             tmp[i+ndata*nw]=outp[i].i;
-//         }
-	dims[0]=nt*nx1*ny1;dims[1]=1;
+	int nwfd;
+	if(jsnap>0)
+	{nwfd=nz1*nx1*ny1*ntsnap;
+	printf("ntsnap=%d\n",ntsnap);
+	}
+	else
+	nwfd=0;
+	
+	dims[0]=nt*nx1*ny1+nwfd;dims[1]=1;
 	vecout=(PyArrayObject *) PyArray_SimpleNew(1,dims,NPY_FLOAT);
+	
 	for(i=0;i<nt*nx1*ny1;i++)
 		(*((float*)PyArray_GETPTR1(vecout,i))) = dat[0][0][i];
+		
+	if(jsnap>0)
+	{
+	
+	for(i=0;i<nwfd;i++)
+		(*((float*)PyArray_GETPTR1(vecout,i+nt*nx1*ny1))) = wvfld[0][i];
+		
+	}
 // 	printf("w0=%g,dw=%g,nw=%d\n",w0,dw,nw);
 // 	(*((float*)PyArray_GETPTR1(vecout,0+ndata*nw*2))) = w0;
 // 	(*((float*)PyArray_GETPTR1(vecout,1+ndata*nw*2))) = dw;

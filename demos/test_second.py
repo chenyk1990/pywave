@@ -17,18 +17,13 @@ vel=np.zeros([nz,nx,ny]);
 for ii in range(nx):
 	for jj in range(ny):
 		vel[:,ii,jj]=v;
-plot3d(vel,cmap=plt.cm.jet,figname='vel3d.png',format='png',dpi=300)
-
-data=aps3d(vel,nt=nt,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81]);
-data=data.reshape(nt,81,81,order='F'); #[x,y,z]
-
-
-from pyseistr import plot3d
-plot3d(data,figname='data3d.png',format='png',dpi=300)
-
-
+# plot3d(vel,cmap=plt.cm.jet,figname='vel3d.png',format='png',dpi=300)
+# 
+# data=aps3d(vel,nt=nt,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81]);
+# data=data.reshape(nt,81,81,order='F'); #[x,y,z]
+# 
 
 ## save wavefields
+[data,wfd]=aps3d(vel,nt=nt,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81],ifsnaps=1,jsnap=4);
 
-# [data,wfd]=aps3d(vel,nt=nt,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81],ifsnaps=1,jsnap=4);
-
+plot3d(data,figname='data3d.png',format='png',dpi=300)

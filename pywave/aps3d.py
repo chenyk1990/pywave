@@ -32,6 +32,7 @@ def aps3d(vel,nt=1501,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81],ns=3,sx=[3
 	
 	OUTPUT
 	data
+	[wfd] if jsnap>0
 	
 	EXAMPLE
 	demos/test_mod3d.py
@@ -64,9 +65,21 @@ def aps3d(vel,nt=1501,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81],ns=3,sx=[3
 	print(nt,nx,ny,nz)
 	dout=aps3dc(vel,source,tri,nt,nx,ny,nz,ns,verb,jsnap,ifsnaps,abc,nbt,ct,dt,ox,dx,oy,dy,oz,dz);
 	
-# 	tri,&nt,&nx,&ny,&nz,&ns,&verb,&jsnap,&ifsnaps,&abs,&nbt,ct,dt,ox,dx,oy,dy,oz,dz);
+	if jsnap>0:
 	
+		ntsnap=0;
+		if jsnap:
+			for it in range(nt):
+				if np.mod(it,jsnap)==0:
+					ntsnap=ntsnap+1;
+		print('ntsnap=',ntsnap);
+		wfd=dout[nt*nx*ny:].reshape(nz,nx,ny,nsnap,order='F'); #[x,y,z]
+		dout=dout[0:nt*nx*ny].reshape(nt,nx,ny,order='F'); #[x,y,z]
+		# tri,&nt,&nx,&ny,&nz,&ns,&verb,&jsnap,&ifsnaps,&abs,&nbt,ct,dt,ox,dx,oy,dy,oz,dz);
 
-	return dout
+	if jsnap>0:
+		return dout,wfd
+	else:
+		return dout
 
 
