@@ -5,7 +5,7 @@
 from pywave import aps3d
 import numpy as np
 import matplotlib.pyplot as plt
-from pyseistr import plot3d
+from pyseistr import plot3d #pip install git+https://github.com/aaspip/pyseistr
 
 nz=81
 nx=81

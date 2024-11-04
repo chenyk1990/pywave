@@ -5,7 +5,7 @@
 from pywave import aps3d
 import numpy as np
 import matplotlib.pyplot as plt
-from pyseistr import plot3d
+from pyseistr import plot3d #pip install git+https://github.com/aaspip/pyseistr
 
 nz=81
 nx=81
@@ -62,26 +62,9 @@ for ii in range(0,376-100,20):
 	plt.savefig(fname=figname,format='png',dpi=300)
 	
 	
-from PIL import Image
-
-def create_gif(image_paths, output_gif_path, duration=500):
-    """Creates a GIF from a list of PNG images."""
-
-    images = [Image.open(image_path) for image_path in image_paths]
-
-    images[0].save(
-        output_gif_path,
-        save_all=True,
-        append_images=images[1:],
-        optimize=False,
-        duration=duration,
-        loop=0  # 0 means infinite loop
-    )
-
-## create GIF/gif
-inpath=fignames
-outpath='wfd3ds.gif'
-create_gif(inpath,outpath)
+## plot 3D wavefield animation in GIF
+from pyseistr import gengif #pip install git+https://github.com/aaspip/pyseistr
+gengif(fignames,'wfd3ds.gif')
 
 
     
