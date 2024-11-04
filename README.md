@@ -57,7 +57,7 @@ or using Pypi (not available yet)
 
     pip install pywave
 
-or
+or (recommended, because we update very fast)
 
     pip install git+https://github.com/chenyk1990/pywave
     
