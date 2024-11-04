@@ -27,3 +27,9 @@ for ii in range(nx):
 [data,wfd]=aps3d(vel,nt=nt,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81],ifsnaps=1,jsnap=4);
 
 plot3d(data,figname='data3d.png',format='png',dpi=300)
+
+
+for ii in range(0,376-100,20):
+	print(ii)
+	plot3d(wfd[:,:,:,ii],figname='wfd3d-%d.png'%ii,format='png',dpi=300)
+	
