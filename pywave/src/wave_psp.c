@@ -7,6 +7,8 @@
 #include "wave_abc.h"
 #include "wave_komplex.h"
 #include "wave_psp.h"
+#include "wave_freqfilt.h"
+#define SF_PI (3.14159265358979323846264338328)
 
 /** Part IV: pseudo-spectral wave extrapolation ********/
 // typedef struct Psmpar {
@@ -159,9 +161,9 @@ int psm(float **wvfld, float ***dat, float **dat_v, float *img, float *vel, psmp
     nkz = (cmplx)? nz2:(nz2/2+1);
     nkx = (cmplx)? nx2:(nx2/2+1);
     
-    if(nk!=ny2*nx2*nkz) np_error("wavenumber dimension mismatch!");
-    np_warning("dkz=%f,dkx=%f,dky=%f,kz0=%f,kx0=%f,ky0=%f",dkz,dkx,dky,kz0,kx0,ky0);
-    np_warning("nk=%d,nkz=%d,nz2=%d,nx2=%d,ny2=%d",nk,nkz,nz2,nx2,ny2);
+//     if(nk!=ny2*nx2*nkz) np_error("wavenumber dimension mismatch!");
+    printf("dkz=%f,dkx=%f,dky=%f,kz0=%f,kx0=%f,ky0=%f\n",dkz,dkx,dky,kz0,kx0,ky0);
+    printf("nk=%d,nkz=%d,nz2=%d,nx2=%d,ny2=%d\n",nk,nkz,nz2,nx2,ny2);
 
     if(abc)
       abc_init(nz,nx,ny,nz2,nx2,ny2,nbt,nbb,nblx,nbrx,nbly,nbry,ct,cb,clx,crx,cly,cry);
@@ -231,7 +233,7 @@ int psm(float **wvfld, float ***dat, float **dat_v, float *img, float *vel, psmp
     /* MAIN LOOP */
     for (it=it1; it!=it2; it+=its) {
       
-        if(verb) np_warning("it=%d/%d;",it,nt);
+        if(verb) printf("it=%d/%d;\n",it,nt);
 
 	/* matrix multiplication */
 	fft3(curr,cwave);
@@ -240,7 +242,7 @@ int psm(float **wvfld, float ***dat, float **dat_v, float *img, float *vel, psmp
 // #ifdef SF_HAS_COMPLEX_H
 // 	  cwavem[ik] = cwave[ik]*lapl[ik];
 // #else
-	  cwavem[ik] = np_cmul(cwave[ik],lapl[ik]);
+	  cwavem[ik] = np_crmul(cwave[ik],lapl[ik]);
 // #endif
 	}
 	
@@ -347,7 +349,7 @@ int psm(float **wvfld, float ***dat, float **dat_v, float *img, float *vel, psmp
 	}
 	}
     }
-    if(verb) np_warning(".");
+    if(verb) printf(".\n");
     if (tri) {
 // #ifdef _OPENMP
 // #pragma omp parallel for default(shared) private(iy,ix,iz)

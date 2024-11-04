@@ -1,6 +1,9 @@
 #include "wave_dtype.h"
 #include "wave_komplex.h"
+#include "wave_freqfilt.h"
+#include "wave_alloc.h"
 
+#define SF_PI (3.14159265358979323846264338328)
 
 /** Part I: Ricker wavelet ********/
 float Ricker(float t, float f0, float t0, float A) 
