@@ -7,28 +7,42 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pyseistr import plot3d
 
-nt=1501
 nz=81
 nx=81
 ny=81
+dz=20
+dx=20
+dy=20
+nt=1501
+dt=0.001
 
 v=np.arange(nz)*20*1.2+1500;
 vel=np.zeros([nz,nx,ny]);
 for ii in range(nx):
 	for jj in range(ny):
 		vel[:,ii,jj]=v;
-plot3d(vel,cmap=plt.cm.jet,figname='vel3d.png',format='png',dpi=300)
 
-data=aps3d(vel,nt=nt,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81]);
-data=data.reshape(nt,81,81,order='F'); #[x,y,z]
+## plot 3D velocity
+plot3d(vel,figsize=(16,10),cmap=plt.cm.jet,z=np.arange(nz)*dz,x=np.arange(nx)*dz,y=np.arange(nz)*dz,barlabel='Velocity (m/s)',showf=False,close=False)
+plt.gca().set_xlabel("X (m)",fontsize='large', fontweight='normal')
+plt.gca().set_ylabel("Y (m)",fontsize='large', fontweight='normal')
+plt.gca().set_zlabel("Z (m)",fontsize='large', fontweight='normal')
+plt.title('3D velocity model')
+plt.savefig(fname='vel3d.png',format='png',dpi=300)
+plt.show()
 
 
-from pyseistr import plot3d
-plot3d(data,figname='data3d.png',format='png',dpi=300)
+data=aps3d(vel,nt,dt,ax=[0,dx,nx],ay=[0,dy,ny],az=[0,dz,nz],jsnap=0);
+data=data.reshape(nt,nx,ny,order='F'); #[x,y,z]
+
+## plot 3D data
+plot3d(data,z=np.arange(nt)*dt,x=np.arange(nx)*dz,y=np.arange(nz)*dz,showf=False,close=False)
+plt.gca().set_xlabel("X (m)",fontsize='large', fontweight='normal')
+plt.gca().set_ylabel("Y (m)",fontsize='large', fontweight='normal')
+plt.gca().set_zlabel("Time (s)",fontsize='large', fontweight='normal')
+plt.title('3D synthetic data')
+plt.savefig(fname='data3d.png',format='png',dpi=300)
+plt.show()
 
 
-
-## save wavefields
-
-# [data,wfd]=aps3d(vel,nt=nt,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81],ifsnaps=1,jsnap=4);
 
