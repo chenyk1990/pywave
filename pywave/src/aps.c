@@ -41,7 +41,7 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
     int   nx, ny, nz;
     float dx, dy, dz;
     int   ns;
-    int   *spx, *spy, *spz;
+//     int   *spx, *spy, *spz;
     int   gpz, gpx, gpy, gplx, gply; /*geophone positions (z,x,y) and geophone length (z,x,y)*/
     int   gpz_v, gpx_v, gpy_v, gpl_v;
     int   jsnap;
@@ -59,6 +59,7 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
     /*misc*/
     bool ps, tri; /*tri: time-reversal imaging*/
     float vref;
+    int i;
 
     psmpar par;
     int nx1, ny1, nz1; /*domain of interest*/
@@ -78,19 +79,19 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
 // 	dout=aps3dc(vel,tri,nt,nx,ny,nz,verb,jsnap,ifsnaps,abc,nbt,ct,dt,ox,dx,oy,dy,oz,dz);
 
 	printf("tri=%d,nt=%d,nx=%d,ny=%d,nz=%d,ns=%d\n",tri,nt,nx,ny,nz,ns);
+	printf("verb=%d,jsnap=%d,ifsnaps=%d,abc=%d,nbt=%d\n",verb,jsnap,ifsnaps,abc,nbt);
+	printf("ct=%g,dt=%g,ox=%g,dx=%g,oy=%g,dy=%g,oz=%g,dz=%g\n",ct,dt,ox,dx,oy,dy,oz,dz);
 	
-	int nw;
-    int i1, iw, i2, n2, n12, n1w;
-    int *rect;
-    float t, w, w0, dw, mean=0.0f;
-    float *mm, *ww;
-    
-    int i, j, m;
-    if (ntw%2 == 0)
-        ntw = (ntw+1);
-    m = (ntw-1)/2;
+// 	int nw;
+//     int i1, iw, i2, n2, n12, n1w;
+//     int *rect;
+//     float t, w, w0, dw, mean=0.0f;
+//     float *mm, *ww;
+//     int i, j, m;
+//     if (ntw%2 == 0)
+//         ntw = (ntw+1);
+//     m = (ntw-1)/2;
 
-	printf("nw=%d,nt=%d 11\n",nw,nt);
 	
 	if(tri==0)
 	{ndata=nx*ny*nz;}
@@ -130,6 +131,7 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
 //     outp = (kiss_fft_cpx*) np_complexalloc(n1*nw);
 
     arrf1 = PyArray_FROM_OTF(f1, NPY_FLOAT, NPY_IN_ARRAY);
+    arrf2 = PyArray_FROM_OTF(f2, NPY_FLOAT, NPY_IN_ARRAY);
     
     nd2=PyArray_NDIM(arrf1);
     
@@ -143,23 +145,8 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
     	return NULL;
     }
     
-    /*reading data*/
-    for (i=0; i<ndata; i++)
-    {
-        vel[i]=*((float*)PyArray_GETPTR1(arrf1,i));
-    }
-	printf("input data done, ndata=%d\n",ndata);
+
         
-
-
-	
-
-
-
-
-
-
-
 /** Part V: main program ********/
 // int main(int argc, char* argv[])
 // {
@@ -175,6 +162,13 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
 //     if (!np_getbool("cmplx",&cmplx)) cmplx=true; /* use complex fft */
 //     if (!np_getint("pad1",&pad1)) pad1=1; /* padding factor on the first axis */
 //     if(!np_getbool("abc",&abc)) abc=false; /* absorbing flag */
+    
+    cmplx=0;
+	jsnap=0;
+	pad1=1;
+	abc=1;
+	src=0;
+	
     if (abc) {
 //       if(!np_getint("nbt",&nbt)) np_error("Need nbt!");
 //       if(!np_getint("nbb",&nbb)) nbb = nbt;
@@ -188,11 +182,12 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
 //       if(!np_getfloat("crx",&crx)) crx = ct;
 //       if(!np_getfloat("cly",&cly)) cly = ct;
 //       if(!np_getfloat("cry",&cry)) cry = ct;
-
+	nbb=nbt;
 	nblx = nbt;
 	nbrx = nbt;
 	nbly = nbt;
 	nbry = nbt;
+	cb=ct;
 	clx = ct;
 	crx = ct;
 	cly = ct;
@@ -215,8 +210,8 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
 //     Fi = np_input ("in");
 //     Fo = np_output("out");
     
-    
-//     if (tri) {
+    int   *spx, *spy, *spz;
+    if (tri) {
 //       gplx = -1;
 //       gply = -1;
 //       gpl_v = -1;
@@ -238,7 +233,7 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
 //       src = -1; ns = -1;
 //       spx = NULL; spy = NULL; spz = NULL;
 //       f0 = NULL; t0 = NULL; A = NULL;
-//     } else {
+    } else {
 //       Fd = NULL;
 //       if (!np_getint("nt",&nt)) np_error("Need nt!");
 //       if (!np_getfloat("dt",&dt)) np_error("Need dt!");
@@ -247,12 +242,45 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
 //       if (!np_getint("gpl_v",&gpl_v)) gpl_v = -1; /* geophone height */
 //       if (!np_getint("src",&src)) src=0; /* source type */
 //       if (!np_getint("ns",&ns)) ns=1; /* source type */
-//       spx = np_intalloc(ns);
-//       spy = np_intalloc(ns);
-//       spz = np_intalloc(ns);
-//       f0  = np_floatalloc(ns);
-//       t0  = np_floatalloc(ns);
-//       A   = np_floatalloc(ns);
+
+//     int   *spx, *spy, *spz;
+//     float   *spx, *spy, *spz;
+	  printf("ns=%d\n",ns);
+      spx = np_intalloc(ns);
+      spy = np_intalloc(ns);
+      spz = np_intalloc(ns);
+//       spx = np_floatalloc(ns);
+//       spy = np_floatalloc(ns);
+//       spz = np_floatalloc(ns);
+      f0  = np_floatalloc(ns);
+      t0  = np_floatalloc(ns);
+      A   = np_floatalloc(ns);
+	float tmp;
+    for (i=0; i<ns; i++)
+    {
+        tmp=*((float*)PyArray_GETPTR1(arrf2,i));
+        spx[i]=tmp;
+        tmp=*((float*)PyArray_GETPTR1(arrf2,3+i));
+        spy[i]=tmp;
+        tmp=*((float*)PyArray_GETPTR1(arrf2,3*2+i));
+        spz[i]=tmp;
+        f0[i]=*((float*)PyArray_GETPTR1(arrf2,3*3+i));
+        t0[i]=*((float*)PyArray_GETPTR1(arrf2,3*4+i));
+        A[i]=*((float*)PyArray_GETPTR1(arrf2,3*5+i));
+    }
+    
+    printf("There are %d sources to be simulated\n",ns);
+    for(i=0;i<ns;i++)
+    {
+    printf("spx[%d]=%d\n",i,spx[i]);
+    printf("spy[%d]=%d\n",i,spy[i]);
+    printf("spz[%d]=%d\n",i,spz[i]);
+    printf("f0[%d]=%g\n",i,f0[i]);
+    printf("t0[%d]=%g\n",i,t0[i]);
+    printf("A[%d]=%g\n",i,A[i]);
+    }
+    
+    }
 //       if (!np_getints("spx",spx,ns)) np_error("Need spx!"); /* shot position x */
 //       if (!np_getints("spy",spy,ns)) np_error("Need spy!"); /* shot position y */
 //       if (!np_getints("spz",spz,ns)) np_error("Need spz!"); /* shot position z */
@@ -293,7 +321,12 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
 //     if (gply==-1) gply = ny1;
 	gplx = nx1;
 	gply = ny1;
-	
+	gpl_v = nz1;
+	gpx=nblx;
+	gpy=nbly;
+	gpz=nbt;
+	vref=1500;
+	ps=1;
 //     if (gpx_v==-1) gpx_v = nblx;
 //     if (gpy_v==-1) gpy_v = nbly;
 //     if (gpz_v==-1) gpz_v = nbt;
@@ -370,15 +403,30 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
     par = (psmpar) np_alloc(1,sizeof(*par));
     vel = np_floatalloc(nz1*ny1*nx1); 	/*change on Jun 2022, YC*/
     vel2= np_floatalloc(nz*ny*nx); 		/*change on Jun 2022, YC*/
-    
+
+    /*reading data*/
+    for (i=0; i<ndata; i++)
+    {
+        vel[i]=*((float*)PyArray_GETPTR1(arrf1,i));
+    }
+	printf("input data done, ndata=%d\n",ndata);
+	
 //     if (tri && NULL==Fd) {dat = NULL;  }
 //     else { dat = np_floatalloc3(nt,gplx,gply);}
 
-if(tri==0)
-dat=np_floatalloc3(nt,gplx,gply);
+// 	for(i=0;i<ndata;i++)
+// // 	dat[0][0][i]=0;
+// 	printf("vel[%d]=%g\n",i,vel[i]);
 
-//     if (NULL!=Fd_v) dat_v = np_floatalloc2(nt,gpl_v);
-//     else dat_v = NULL;
+	if(tri==0)
+	dat=np_floatalloc3(nt,gplx,gply);
+
+	for(i=0;i<nt*gplx*gply;i++)
+	dat[0][0][i]=0;
+	
+	int ifvdata=0;
+	if(ifvdata==1)dat_v = np_floatalloc2(nt,gpl_v);
+    else dat_v = NULL;
 
     if (tri) img = np_floatalloc(nz1*ny1*nx1);
     else img = NULL;
@@ -389,13 +437,27 @@ dat=np_floatalloc3(nt,gplx,gply);
 
 //     np_floatread(vel,nz1*ny1*nx1,Fi);
 	vel_expand(vel,vel2,nz1,nx1,ny1,nbt,nbb,nblx,nbrx,nbly,nbry);  /*change on Jun 2022, YC*/
+// 	for(i=0;i<nz1*nx1*ny1;i++)
+// // 	dat[0][0][i]=0;
+// 	printf("vel2[%d]=%g\n",i,vel2[i]);
+
+//     if (tri) {
+// //       if (NULL!=Fd)   np_floatread(dat[0][0],gplx*gply*nt,Fd);
+// //       if (NULL!=Fd_v) np_floatread(dat_v[0],gpl_v*nt,Fd_v);
+// 
+// 
+//     }
+
+// 	float sum=0;
+// 	for(i=0;i<ndata;i++)
+// 	sum=sum+vel[i];
+
+// 	for(i=0;i<ndata;i++)
+// 	if(vel[i]!=vel[0])
+// 	printf("vel[%d]=%g\n",i,vel[i]);
 	
-    if (tri) {
-//       if (NULL!=Fd)   np_floatread(dat[0][0],gplx*gply*nt,Fd);
-//       if (NULL!=Fd_v) np_floatread(dat_v[0],gpl_v*nt,Fd_v);
+// 	printf("vel sum = %g\n",sum);
 
-
-    }
     /*passing the parameters*/
     par->nx    = nx;  
     par->ny    = ny;
@@ -441,9 +503,16 @@ dat=np_floatalloc3(nt,gplx,gply);
     par->ps    = ps;
     par->vref  = vref;
 
+	printf("par->nx=%d,par->ny=%d,par->nz=%d\n",par->nx,par->ny,par->nz);
+	printf("par->dx=%g,par->dy=%g,par->dz=%g\n",par->dx,par->dy,par->dz);
+	printf("par->ct=%g,par->cb=%g,par->clx=%g,par->cly=%g\n",par->ct,par->cb,par->clx,par->cly);
+	
+	
+	printf("par->verb=%d,par->ps=%d,par->vref=%g\n",par->verb,par->ps,par->vref);
+		
     /*do the work*/
     psm(wvfld, dat, dat_v, img, vel2, par, tri);
-
+	
     if (tri) {
 //       np_floatwrite(img,nz1*ny1*nx1,Fo);
     } else {
@@ -460,43 +529,7 @@ dat=np_floatalloc3(nt,gplx,gply);
       
 //     exit (0);
 // }
-
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	printf("before output\n");
-	
-
 	/*sub-function goes here*/
 //     }
     /*Below is the output part*/
@@ -515,7 +548,7 @@ dat=np_floatalloc3(nt,gplx,gply);
 	vecout=(PyArrayObject *) PyArray_SimpleNew(1,dims,NPY_FLOAT);
 	for(i=0;i<nt*nx1*ny1;i++)
 		(*((float*)PyArray_GETPTR1(vecout,i))) = dat[0][0][i];
-	printf("w0=%g,dw=%g,nw=%d\n",w0,dw,nw);
+// 	printf("w0=%g,dw=%g,nw=%d\n",w0,dw,nw);
 // 	(*((float*)PyArray_GETPTR1(vecout,0+ndata*nw*2))) = w0;
 // 	(*((float*)PyArray_GETPTR1(vecout,1+ndata*nw*2))) = dw;
 // 	(*((float*)PyArray_GETPTR1(vecout,2+ndata*nw*2))) = nw;

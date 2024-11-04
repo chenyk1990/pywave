@@ -10,32 +10,6 @@
 #include "wave_freqfilt.h"
 #define SF_PI (3.14159265358979323846264338328)
 
-/** Part IV: pseudo-spectral wave extrapolation ********/
-// typedef struct Psmpar {
-//   /*survey parameters*/
-//   int   nx, ny, nz;
-//   float dx, dy, dz;
-//   int   ns;
-//   int   *spx, *spy, *spz;
-//   int   gpz, gpx, gpy, gplx, gply;
-//   int   gpz_v, gpx_v, gpl_v;
-//   int   jsnap;
-//   /*fft related*/
-//   bool  cmplx;
-//   int   pad1;
-//   /*absorbing boundary*/
-//   bool abc;
-//   int nbt, nbb, nblx, nbrx, nbly, nbry;
-//   float ct,cb,clx,crx,cly,cry;
-//   /*source parameters*/
-//   int src; /*source type*/
-//   int nt;
-//   float dt,*f0,*t0,*A;
-//   /*misc*/
-//   bool verb, ps;
-//   float vref;
-// } * psmpar; /*psm parameters*/
-/*^*/
 
 int fft3_init(bool cmplx1        /* if complex transform */,
 	      int pad1           /* padding on the first axis */,
@@ -51,6 +25,7 @@ void ifft3(float *out      /* [n1*n2*n3] */,
 int psm(float **wvfld, float ***dat, float **dat_v, float *img, float *vel, psmpar par, bool tri)
 /*< pseudo-spectral method >*/
 {
+	float sum;
     /*survey parameters*/
     int   nx, ny, nz;
     float dx, dy, dz;
@@ -135,7 +110,6 @@ int psm(float **wvfld, float ***dat, float **dat_v, float *img, float *vel, psmp
     verb  = par->verb;
     ps    = par->ps;
     vref  = par->vref;
-    
 
 // #ifdef _OPENMP
 // #pragma omp parallel
@@ -161,8 +135,7 @@ int psm(float **wvfld, float ***dat, float **dat_v, float *img, float *vel, psmp
     nkz = (cmplx)? nz2:(nz2/2+1);
     nkx = (cmplx)? nx2:(nx2/2+1);
     
-//     if(nk!=ny2*nx2*nkz) np_error("wavenumber dimension mismatch!");
-    printf("dkz=%f,dkx=%f,dky=%f,kz0=%f,kx0=%f,ky0=%f\n",dkz,dkx,dky,kz0,kx0,ky0);
+    printf("cmplx=%d,dkz=%f,dkx=%f,dky=%f,kz0=%f,kx0=%f,ky0=%f\n",cmplx,dkz,dkx,dky,kz0,kx0,ky0);
     printf("nk=%d,nkz=%d,nz2=%d,nx2=%d,ny2=%d\n",nk,nkz,nz2,nx2,ny2);
 
     if(abc)
@@ -247,7 +220,7 @@ int psm(float **wvfld, float ***dat, float **dat_v, float *img, float *vel, psmp
 	}
 	
 	ifft3(wave,cwavem);
-
+	
 // #ifdef _OPENMP
 // #pragma omp parallel for default(shared) private(iy,ix,iz,i,j,old,c)
 // #endif

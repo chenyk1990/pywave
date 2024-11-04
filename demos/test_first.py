@@ -1,29 +1,28 @@
-## This DEMO is a 3D example [x,y,z] with constant velocity and with one shot
+## This DEMO is a 3D acoustic wave simulation using pseudo-spectral method
 # 
 #  COPYRIGHT: Yangkang Chen, 2024, The University of Texas at Austin
 
 from pywave import aps3d
 import numpy as np
+import matplotlib.pyplot as plt
+from pyseistr import plot3d
 
-vel=np.ones([101*101*101,1],dtype='float32');
-data=aps3d(vel,nt=1501,dt=0.001,ax=[0,0.01,101],ay=[0,0.01,101],az=[0,0.01,101]);
+nt=1501
+nz=81
+nx=81
+ny=81
 
+v=np.arange(nz)*20*1.2+1500;
+vel=np.zeros([nz,nx,ny]);
+for ii in range(nx):
+	for jj in range(ny):
+		vel[:,ii,jj]=v;
+plot3d(vel,cmap=plt.cm.jet,figname='vel3d.png',format='png',dpi=300)
 
-# time=t.reshape(101,101,101,order='F'); #[x,y,z]
-
-# velx=3.80395*np.ones([101*101*101,1],dtype='float32'); #velocity axis must be x,y,z respectively
-# # velx=3.09354*np.ones([101*101*101,1],dtype='float32'); #velocity axis must be x,y,z respectively
-# 
-# eta=0.340859*np.ones([101*101*101,1],dtype='float32'); #velocity axis must be x,y,z respectively
-# eta=0.340859*np.ones([101*101*101,1],dtype='float32');
-# t=fmm.eikonalvti(velx,vel,eta,xyz=np.array([0.5,0,0]),ax=[0,0.01,101],ay=[0,0.01,101],az=[0,0.01,101],order=1);
-# time2=t.reshape(101,101,101,order='F');#first axis (vertical) is x, second is z
-
-
-## Verify
-print(['Testing result:',time.max(),time.min(),time.std(),time.var()])
-print(['Correct result:',0.4845428, 0.0, 0.08635751, 0.00745762])
+data=aps3d(vel,nt=nt,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81]);
+data=data.reshape(nt,81,81,order='F'); #[x,y,z]
 
 
-
+from pyseistr import plot3d
+plot3d(data,figname='data3d.png',format='png',dpi=300)
 

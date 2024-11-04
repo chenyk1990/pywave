@@ -46,8 +46,7 @@ def aps3d(vel,nt=1501,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81],ns=3,sx=[3
 	https://github.com/chenyk1990/passive_imaging/blob/main/mod3d.c
 	
 	'''
-	vel=3.09354*np.ones([101*101*101,1],dtype='float32');
-	
+	vel=vel.flatten(order='F').astype(np.float32)
 	ox=ax[0];dx=ax[1];nx=ax[2];
 	oy=ay[0];dy=ay[1];ny=ay[2];
 	oz=az[0];dz=az[1];nz=az[2];
@@ -61,13 +60,13 @@ def aps3d(vel,nt=1501,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81],ns=3,sx=[3
 	
 # 	vel=vel.flatten(order='F',dtype='float32')
 	source=np.concatenate([sx,sy,sz,f,t,A],axis=0,dtype='float32'); #remember: source size is ns*6
-	
+	print(source)
 	print(nt,nx,ny,nz)
 	dout=aps3dc(vel,source,tri,nt,nx,ny,nz,ns,verb,jsnap,ifsnaps,abc,nbt,ct,dt,ox,dx,oy,dy,oz,dz);
 	
 # 	tri,&nt,&nx,&ny,&nz,&ns,&verb,&jsnap,&ifsnaps,&abs,&nbt,ct,dt,ox,dx,oy,dy,oz,dz);
 	
 
-	return 
+	return dout
 
 
