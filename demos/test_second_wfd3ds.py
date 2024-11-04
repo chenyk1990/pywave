@@ -50,11 +50,40 @@ plt.savefig(fname='data3d.png',format='png',dpi=300)
 plt.show()
 
 ## plot 3D wavefields
+fignames=[]
 for ii in range(0,376-100,20):
 	print(ii)
-	plot3d(wfd[:,:,:,ii],z=np.arange(nz)*dz,x=np.arange(nx)*dz,y=np.arange(nz)*dz,barlabel='Velocity (m/s)',showf=False,close=False)
+	plot3d(wfd[:,:,:,ii],vmin=-1,vmax=1,z=np.arange(nz)*dz,x=np.arange(nx)*dz,y=np.arange(nz)*dz,barlabel='Amplitude',showf=False,close=False)
 	plt.gca().set_xlabel("X (m)",fontsize='large', fontweight='normal')
 	plt.gca().set_ylabel("Y (m)",fontsize='large', fontweight='normal')
 	plt.gca().set_zlabel("Z (m)",fontsize='large', fontweight='normal')
-	plt.title('3D wavefield at %g s'%ii*dt*4)
-	plt.savefig(fname='wfd3d-%d.png'%ii,format='png',dpi=300)
+	plt.title('3D wavefield at %g s'%(ii*dt*4))
+	figname='wfd3d-%d.png'%ii;fignames.append(figname);
+	plt.savefig(fname=figname,format='png',dpi=300)
+	
+	
+from PIL import Image
+
+def create_gif(image_paths, output_gif_path, duration=500):
+    """Creates a GIF from a list of PNG images."""
+
+    images = [Image.open(image_path) for image_path in image_paths]
+
+    images[0].save(
+        output_gif_path,
+        save_all=True,
+        append_images=images[1:],
+        optimize=False,
+        duration=duration,
+        loop=0  # 0 means infinite loop
+    )
+
+## create GIF/gif
+inpath=fignames
+outpath='wfd3ds.gif'
+create_gif(inpath,outpath)
+
+
+    
+    
+    
