@@ -6,10 +6,24 @@
 
 
 ## Reference
+Chen, Y., O.M. Saad, M. Bai, X. Liu, and S. Fomel, 2021, A compact program for 3D passive seismic source-location imaging, Seismological Research Letters, 92, 3187–3201.
+
 Chen et al., 202X, Pywave: a Python package for stuying wave equations, TBD
 
 BibTeX:
 
+	@Article{chen2021srl,
+	  author={Yangkang Chen and Omar M. Saad and Min Bai and Xingye Liu and Sergey Fomel},
+	  title = {A compact program for 3{D} passive seismic source-location imaging},
+	  journal={Seismological Research Letters},
+	  year=2021,
+	  volume=92,
+	  issue=5,
+	  number=5,
+	  pages={3187–3201},
+	  doi={10.1785/0220210050},
+	}
+	
 	@article{npre,
 	  title={Pywave: a Python package for stuying wave equations},
 	  author={Yangkang Chen and co-authors},
