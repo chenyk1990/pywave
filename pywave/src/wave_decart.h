@@ -6,7 +6,6 @@
 #define _LARGEFILE_SOURCE
 #endif
 #include <sys/types.h>
-#include <unistd.h>
 
 
 void np_line2cart(int dim         /* number of dimensions */, 

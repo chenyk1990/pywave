@@ -4,7 +4,6 @@
 #define _LARGEFILE_SOURCE
 #endif
 #include <sys/types.h>
-#include <unistd.h>
 /*^*/
 
 #include "wave_decart.h"
