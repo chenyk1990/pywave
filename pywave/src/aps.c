@@ -57,7 +57,7 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
     int nt,ntsnap;
     float *f0,*t0,*A;
     /*misc*/
-    bool ps, tri; /*tri: time-reversal imaging*/
+    int ps, tri; /*tri: time-reversal imaging*/
     float vref;
     int i;
 
@@ -93,11 +93,11 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
 //     m = (ntw-1)/2;
 
 	
-	if(tri==0)
-	{ndata=nx*ny*nz;}
-	else
-	{ndata=nx*ny*nt;}
-
+// 	if(tri==0)
+// 	{ndata=nx*ny*nz;}
+// 	else
+// 	{ndata=nx*ny*nt;}
+	ndata=nx*ny*nz;
 
 // 	printf("n1=%d,nw=%d,nt=%d 22\n",n1,nw,nt);
 	
@@ -137,7 +137,7 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
     
     npy_intp *sp=PyArray_SHAPE(arrf1);
 
-	data  = (float*)malloc(ndata * sizeof(float));
+// 	data  = (float*)malloc(ndata * sizeof(float));
 	
     if (*sp != ndata)
     {
@@ -230,9 +230,9 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
 // 	np_histfloat(Fd_v,"d1",&dt);
 // 	np_histint(Fd_v,"n2",&gpl_v);
 //       } else Fd_v = NULL;
-//       src = -1; ns = -1;
-//       spx = NULL; spy = NULL; spz = NULL;
-//       f0 = NULL; t0 = NULL; A = NULL;
+      src = -1; ns = -1;
+      spx = NULL; spy = NULL; spz = NULL;
+      f0 = NULL; t0 = NULL; A = NULL;
     } else {
 //       Fd = NULL;
 //       if (!np_getint("nt",&nt)) np_error("Need nt!");
@@ -415,20 +415,35 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
 //     if (tri && NULL==Fd) {dat = NULL;  }
 //     else { dat = np_floatalloc3(nt,gplx,gply);}
 
+	if(tri)
+	{
+	printf("Doing TRI, reading data\n");
+	dat = np_floatalloc3(nt,gplx,gply);
+    for (i=0; i<nt*gplx*gply; i++)
+    {
+        dat[0][0][i]=*((float*)PyArray_GETPTR1(arrf2,i));
+    }
+	printf("Doing TRI, reading data done\n");
+    }
 // 	for(i=0;i<ndata;i++)
 // // 	dat[0][0][i]=0;
 // 	printf("vel[%d]=%g\n",i,vel[i]);
 
 	if(tri==0)
+	{
 	dat=np_floatalloc3(nt,gplx,gply);
 
 	for(i=0;i<nt*gplx*gply;i++)
 	dat[0][0][i]=0;
+	}
+	
 	
 	int ifvdata=0;
 	if(ifvdata==1)dat_v = np_floatalloc2(nt,gpl_v);
     else dat_v = NULL;
 
+	
+	
     if (tri) img = np_floatalloc(nz1*ny1*nx1);
     else img = NULL;
 

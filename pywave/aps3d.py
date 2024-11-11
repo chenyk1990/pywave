@@ -1,7 +1,7 @@
 import numpy as np
 from apscfun import *
 
-def aps3d(vel,nt=1501,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81],ns=3,sx=[30,40,50],sy=[30,40,50],sz=[30,40,50],f=[10,10,10],t=[0.2,0.35,0.5],A=[1,2,2],nbt=30,ct=0.01,jsnap=4,abc=True,ifsnaps=False,ps=True,tri=False,verb=True):
+def aps3d(vel,nt=1501,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81],ns=3,sx=[30,40,50],sy=[30,40,50],sz=[30,40,50],f=[10,10,10],t=[0.2,0.35,0.5],A=[1,2,2],nbt=30,ct=0.01,jsnap=4,abc=True,ifsnaps=False,ps=True,tri=False,dat=None,verb=True):
 	'''
 	aps3d: 3D acoustic wavefield modeling using the pseudo-spectral method  
 	
@@ -60,9 +60,20 @@ def aps3d(vel,nt=1501,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81],ns=3,sx=[3
 	A=np.array(A);
 	
 # 	vel=vel.flatten(order='F',dtype='float32')
-	source=np.concatenate([sx,sy,sz,f,t,A],axis=0,dtype='float32'); #remember: source size is ns*6
+
+	if tri:
+# 		if dat=='None':
+# 			print('Need input data')
+		print('Time-reversal imaging')
+		print('dat.shape',dat.shape)
+		source=dat.flatten(order='F').astype(np.float32); 
+		tri=1;
+	else:
+		source=np.concatenate([sx,sy,sz,f,t,A],axis=0,dtype='float32'); #remember: source size is ns*6
+	
 	print(source)
 	print(nt,nx,ny,nz)
+	print(tri)
 	dout=aps3dc(vel,source,tri,nt,nx,ny,nz,ns,verb,jsnap,ifsnaps,abc,nbt,ct,dt,ox,dx,oy,dy,oz,dz);
 	
 	if jsnap>0:
