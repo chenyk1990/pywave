@@ -8,7 +8,7 @@
 #include "wave_komplex.h"
 #include "wave_psp.h"
 #include "wave_freqfilt.h"
-#define SF_PI (3.14159265358979323846264338328)
+#define np_PI (3.14159265358979323846264338328)
 
 
 int fft3_init(bool cmplx1        /* if complex transform */,
@@ -184,7 +184,7 @@ int psm(float **wvfld, float ***dat, float **dat_v, float *img, float *vel, psmp
 	kx = kx0+ix*dkx;
 	for (iz=0; iz < nkz; iz++) {
 	    kz = kz0+iz*dkz;
-	    k = 2*SF_PI*hypot(ky,hypot(kx,kz));
+	    k = 2*np_PI*hypot(ky,hypot(kx,kz));
 	    if (ps) lapl[iz+ix*nkz+iy*nkz*nx2] = -k*k;
 	    else lapl[iz+ix*nkz+iy*nkz*nx2] = 2.*(cos(vref*k)-1.)/vref2;
 	}
@@ -212,7 +212,7 @@ int psm(float **wvfld, float ***dat, float **dat_v, float *img, float *vel, psmp
 	fft3(curr,cwave);
 
 	for (ik = 0; ik < nk; ik++) {
-// #ifdef SF_HAS_COMPLEX_H
+// #ifdef np_HAS_COMPLEX_H
 // 	  cwavem[ik] = cwave[ik]*lapl[ik];
 // #else
 	  cwavem[ik] = np_crmul(cwave[ik],lapl[ik]);
@@ -338,6 +338,286 @@ int psm(float **wvfld, float ***dat, float **dat_v, float *img, float *vel, psmp
 
     /*free up memory*/
 //     fft3_finalize();
+    if (abc) abc_close();
+    free(vv);
+    free(lapl);   
+    free(wave);
+    free(curr);
+    free(prev);
+    free(cwave);
+    free(cwavem);
+    
+    return 0;
+}
+
+
+
+int psm2d(float **wvfld, float **dat, float **dat_v, float *img, float *vel, pspar par, bool tri)
+/*< pseudo-spectral method (2D) >*/
+{
+    /*survey parameters*/
+    int   nx, nz;
+    float dx, dz;
+    int   n_srcs;
+    int   *spx, *spz;
+    int   gpz, gpx, gpl;
+    int   gpz_v, gpx_v, gpl_v;
+    int   snap;
+    /*fft related*/
+    bool  cmplx;
+    int   pad1;
+    /*absorbing boundary*/
+    bool abc;
+    int nbt, nbb, nbl, nbr;
+    float ct,cb,cl,cr;
+    /*source parameters*/
+    int src; /*source type*/
+    int nt;
+    float dt,*f0,*t0,*A;
+    /*misc*/
+    bool verb, ps;
+    float vref;
+    
+    int nx1, nz1; /*domain of interest*/
+    int it,iz,ik,ix,i,j;     /* index variables */
+    int nk,nzx,nz2,nx2,nzx2,nkz,nth;
+    int it1, it2, its;
+    float dkx,dkz,kx0,kz0,vref2,kx,kz,k,t;
+    float c, old;
+
+    /*wave prop arrays*/
+    float *vv;
+    np_complex *cwave,*cwavem;
+    float *wave,*curr,*prev,*lapl;
+
+    /*source*/
+    float **rick;
+    float freq;
+    int fft_size;
+
+    /*passing the parameters*/
+    nx    = par->nx;
+    nz    = par->nz;
+    dx    = par->dx;
+    dz    = par->dz;
+    n_srcs= par->n_srcs;
+    spx   = par->spx;
+    spz   = par->spz;
+    gpz   = par->gpz;
+    gpx   = par->gpx;
+    gpl   = par->gpl;
+    gpz_v = par->gpz_v;
+    gpx_v = par->gpx_v;
+    gpl_v = par->gpl_v;
+    snap  = par->snap;
+    cmplx = par->cmplx;
+    pad1  = par->pad1;
+    abc   = par->abc;
+    nbt   = par->nbt;
+    nbb   = par->nbb;
+    nbl   = par->nbl;
+    nbr   = par->nbr;
+    ct    = par->ct;
+    cb    = par->cb;
+    cl    = par->cl;
+    cr    = par->cr;
+    src   = par->src;
+    nt    = par->nt;
+    dt    = par->dt;
+    f0    = par->f0;
+    t0    = par->t0;
+    A     = par->A;
+    verb  = par->verb;
+    ps    = par->ps;
+    vref  = par->vref;
+    
+
+// #ifdef _OPENMP
+// #pragma omp parallel
+//     {
+//       nth = omp_get_num_threads();
+//     }
+// #else
+//     nth = 1;
+// #endif
+//     if (verb) np_warning(">>>> Using %d threads <<<<<", nth);
+
+    nz1 = nz-nbt-nbb;
+    nx1 = nx-nbl-nbr;
+
+    nk = fft2_init(cmplx,pad1,nz,nx,&nz2,&nx2);
+    nzx = nz*nx;
+    nzx2 = nz2*nx2;
+    
+    dkz = 1./(nz2*dz); kz0 = (cmplx)? -0.5/dz:0.;
+    dkx = 1./(nx2*dx); kx0 = -0.5/dx;
+    nkz = (cmplx)? nz2:(nz2/2+1);
+    if(nk!=nx2*nkz) np_error("wavenumber dimension mismatch!");
+    np_warning("dkz=%f,dkx=%f,kz0=%f,kx0=%f",dkz,dkx,kz0,kx0);
+    np_warning("nk=%d,nkz=%d,nz2=%d,nx2=%d",nk,nkz,nz2,nx2);
+
+    if(abc)
+      abc_init(nz,nx,nz2,nx2,nbt,nbb,nbl,nbr,ct,cb,cl,cr);
+
+    /* allocate and read/initialize arrays */
+    vv     = np_floatalloc(nzx); 
+    lapl   = np_floatalloc(nk);
+    wave   = np_floatalloc(nzx2);
+    curr   = np_floatalloc(nzx2);
+    prev   = np_floatalloc(nzx2);
+    cwave  = np_complexalloc(nk);
+    cwavem = np_complexalloc(nk);
+    if (!tri && src==0) {
+      rick = np_floatalloc2(nt,n_srcs);
+      for (i=0; i<n_srcs; i++) {
+	for (it=0; it<nt; it++) {
+	  rick[i][it] = 0.f;
+	}
+	rick[i][(int)(t0[i]/dt)] = A[i]; /*time delay*/
+	freq = f0[i]*dt;           /*peak frequency*/
+	fft_size = 2*kiss_fft_next_fast_size((nt+1)/2);
+	ricker_init(fft_size, freq, 0);
+	np_freqfilt(nt,rick[i]);
+	ricker_close();
+      }
+    } else rick = NULL;
+
+    for (iz=0; iz < nzx; iz++) {
+        vv[iz] = vel[iz]*vel[iz]*dt*dt;
+    }
+    vref *= dt;
+    vref2 = vref*vref;
+    for (iz=0; iz < nzx2; iz++) {
+	curr[iz] = 0.;
+	prev[iz] = 0.;
+    }
+
+    /* constructing the pseudo-analytical op */
+    for (ix=0; ix < nx2; ix++) {
+	kx = kx0+ix*dkx;
+	for (iz=0; iz < nkz; iz++) {
+	    kz = kz0+iz*dkz;
+	    k = 2*np_PI*hypot(kx,kz);
+	    if (ps) lapl[iz+ix*nkz] = -k*k;
+	    else lapl[iz+ix*nkz] = 2.*(cos(vref*k)-1.)/vref2;
+	}
+    }
+
+    if (tri) { /* time-reversal propagation */
+	/* step backward in time */
+	it1 = nt-1;
+	it2 = -1;
+	its = -1;	
+    } else { /* modeling */
+	/* step forward in time */
+	it1 = 0;
+	it2 = nt;
+	its = +1;
+    }
+
+    /* MAIN LOOP */
+    for (it=it1; it!=it2; it+=its) {
+      
+        if(verb) np_warning("it=%d/%d;",it,nt);
+
+	/* matrix multiplication */
+	fft2(curr,cwave);
+
+	for (ik = 0; ik < nk; ik++) {
+// #ifdef np_HAS_COMPLEX_H
+// 	  cwavem[ik] = cwave[ik]*lapl[ik];
+// #else
+	  cwavem[ik] = np_cmul(cwave[ik],lapl[ik]);
+// #endif
+	}
+	
+	ifft2(wave,cwavem);
+
+	for (ix = 0; ix < nx; ix++) {
+	    for (iz=0; iz < nz; iz++) {
+		i = iz+ix*nz;  /* original grid */
+		j = iz+ix*nz2; /* padded grid */
+
+		old = c = curr[j];
+		c += c - prev[j];
+		prev[j] = old;
+		c += wave[j]*vv[i];
+		curr[j] = c;
+	    }
+	}
+
+	if (tri) {
+	  /* inject data */
+	  if (NULL!=dat) {
+	    for (ix = 0; ix < gpl; ix++) {
+	      curr[gpz+(ix+gpx)*nz2] += vv[gpz+(ix+gpx)*nz]*dat[ix][it];
+	    }
+	  }
+	  if (NULL!=dat_v) {
+	    for (iz = 0; iz < gpl_v; iz++) {
+	      curr[gpz_v+iz+(gpx_v)*nz2] += vv[gpz_v+iz+(gpx_v)*nz]*dat_v[iz][it];
+	    }
+	  }
+	} else {
+	  t = it*dt;
+	  for (i=0; i<n_srcs; i++) {
+	    for(ix=-1;ix<=1;ix++) {
+	      for(iz=-1;iz<=1;iz++) {
+		ik = spz[i]+iz+nz*(spx[i]+ix);
+		j = spz[i]+iz+nz2*(spx[i]+ix);
+		if (src==0) {
+		  curr[j] += vv[ik]*rick[i][it]/(abs(ix)+abs(iz)+1);
+		} else {
+		  curr[j] += vv[ik]*Ricker(t, f0[i], t0[i], A[i])/(abs(ix)+abs(iz)+1);
+		}
+	      }
+	    }
+	  }
+	}
+	
+	/*apply abc*/
+	if (abc) {
+	  abc_apply(curr);
+	  abc_apply(prev);
+	}
+
+	if (!tri) {
+	  /* record data */
+	  if (NULL!=dat) {
+	    for (ix = 0; ix < gpl; ix++) {
+	      dat[ix][it] = curr[gpz+(ix+gpx)*nz2];
+	    }
+	  }
+	  if (NULL!=dat_v) {
+	    for (iz = 0; iz < gpl_v; iz++) {
+	      dat_v[iz][it] = curr[gpz_v+iz+(gpx_v)*nz2];
+	    }
+	  }
+	}
+
+	/* save wavefield */
+	if (snap > 0 && it%snap==0) {
+	  for (ix=0; ix<nx1; ix++) {
+	    for (iz=0; iz<nz1; iz++) {
+	      i = iz + nz1*ix;
+	      j = iz+nbt + (ix+nbl)*nz2; /* padded grid */
+	      wvfld[it/snap][i] = curr[j];
+	    }
+	  }
+	}
+    }
+    if(verb) np_warning(".");
+
+    if (tri) {
+      for (ix = 0; ix < nx1; ix++) {
+	for (iz = 0; iz < nz1; iz++) {
+	  img[iz + nz1*ix] = curr[iz+nbt + (ix+nbl)*nz2];
+	}
+      }
+    }
+
+    /*free up memory*/
+    fft2_finalize();
     if (abc) abc_close();
     free(vv);
     free(lapl);   

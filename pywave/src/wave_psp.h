@@ -39,4 +39,7 @@ typedef struct Psmpar {
 int psm(float **wvfld, float ***dat, float **dat_v, float *img, float *vel, psmpar par, bool tri);
 /*< pseudo-spectral method >*/
 
+int psm2d(float **wvfld, float **dat, float **dat_v, float *img, float *vel, pspar par, bool tri);
+/*< pseudo-spectral method (2D) >*/
+
 #endif
