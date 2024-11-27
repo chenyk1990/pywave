@@ -1015,7 +1015,9 @@ static PyObject *aps2dc(PyObject *self, PyObject *args){
     
 
 //     np_floatread(vel,nz1*ny1*nx1,Fi);
-	vel_expand2d(vel,vel2,nz1,nx1,nbt,nbb,nblx,nbrx);  /*change on Jun 2022, YC*/
+	
+	/*2D velocity expansion uses 3D function*/
+	vel_expand(vel,vel2,nz1,nx1,1,nbt,nbb,nblx,nbrx,0,0);  /*if we can use existing function (e.g., 3D version), use it*/
 // 	for(i=0;i<nz1*nx1*ny1;i++)
 // // 	dat[0][0][i]=0;
 // 	printf("vel2[%d]=%g\n",i,vel2[i]);

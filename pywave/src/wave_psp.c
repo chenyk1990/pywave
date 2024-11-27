@@ -351,8 +351,20 @@ int psm(float **wvfld, float ***dat, float **dat_v, float *img, float *vel, psmp
 }
 
 
+int fft2_init(bool cmplx1        /* if complex transform */,
+	      int pad1           /* padding on the first axis */,
+	      int nx,   int ny   /* input data size */, 
+	      int *nx2, int *ny2 /* padded data size */);
+		
+void fft2(float *inp      /* [n1*n2] */, 
+	  np_complex *out /* [nk*n2] */);
+	  
+void ifft2(float *out      /* [n1*n2] */, 
+	   np_complex *inp /* [nk*n2] */);
 
-int psm2d(float **wvfld, float **dat, float **dat_v, float *img, float *vel, pspar par, bool tri)
+void fft2_finalize();
+
+int psm2d(float **wvfld, float **dat, float **dat_v, float *img, float *vel, psmpar par, bool tri)
 /*< pseudo-spectral method (2D) >*/
 {
     /*survey parameters*/
@@ -452,13 +464,15 @@ int psm2d(float **wvfld, float **dat, float **dat_v, float *img, float *vel, psp
     dkz = 1./(nz2*dz); kz0 = (cmplx)? -0.5/dz:0.;
     dkx = 1./(nx2*dx); kx0 = -0.5/dx;
     nkz = (cmplx)? nz2:(nz2/2+1);
-    if(nk!=nx2*nkz) np_error("wavenumber dimension mismatch!");
-    np_warning("dkz=%f,dkx=%f,kz0=%f,kx0=%f",dkz,dkx,kz0,kx0);
-    np_warning("nk=%d,nkz=%d,nz2=%d,nx2=%d",nk,nkz,nz2,nx2);
+//     if(nk!=nx2*nkz) np_error("wavenumber dimension mismatch!");
+    fprintf("dkz=%f,dkx=%f,kz0=%f,kx0=%f\n",dkz,dkx,kz0,kx0);
+    fprintf("nk=%d,nkz=%d,nz2=%d,nx2=%d\n",nk,nkz,nz2,nx2);
 
     if(abc)
-      abc_init(nz,nx,nz2,nx2,nbt,nbb,nbl,nbr,ct,cb,cl,cr);
+      abc_init(nz,nx,1,nz2,nx2,1,nbt,nbb,nbl,nbr,0,0,ct,cb,cl,cr,cl,cr);
 
+//       abc_init(nz,nx,nz2,nx2,nbt,nbb,nbl,nbr,ct,cb,cl,cr);
+  
     /* allocate and read/initialize arrays */
     vv     = np_floatalloc(nzx); 
     lapl   = np_floatalloc(nk);
@@ -527,7 +541,7 @@ int psm2d(float **wvfld, float **dat, float **dat_v, float *img, float *vel, psp
 // #ifdef np_HAS_COMPLEX_H
 // 	  cwavem[ik] = cwave[ik]*lapl[ik];
 // #else
-	  cwavem[ik] = np_cmul(cwave[ik],lapl[ik]);
+	  cwavem[ik] = np_crmul(cwave[ik],lapl[ik]);
 // #endif
 	}
 	
