@@ -637,7 +637,7 @@ static PyObject *aps2dc(PyObject *self, PyObject *args){
     psmpar par;
     int nx1, ny1, nz1; /*domain of interest*/
     int it;
-    float *vel,*vel2,***dat,**dat_v,**wvfld,*img; /*velocity profile*/
+    float *vel,*vel2,**dat,**dat_v,**wvfld,*img; /*velocity profile*/
     
     float oz,ox,oy; 
     int ifsnaps;
