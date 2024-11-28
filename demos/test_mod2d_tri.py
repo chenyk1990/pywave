@@ -111,7 +111,7 @@ plt.savefig(fname='location.png',format='png',dpi=300)
 plt.show()
 
 ## All
-jj=3
+jj=2
 wfd=np.load('wfd-tri-%d.npy'%jj)
 
 fignames=[]
