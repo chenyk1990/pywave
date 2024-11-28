@@ -106,12 +106,12 @@ plt.imshow(imag,aspect='auto',cmap="seismic",clim=[0,0.5]);
 plt.gca().set_xlabel("X (m)",fontsize='large', fontweight='normal')
 plt.gca().set_ylabel("Z (m)",fontsize='large', fontweight='normal')
 plt.title('Location image')
-plt.colorbar(orientation='horizontal',shrink=0.6,label='Velocity (m/s)');
-plt.savefig(fname='location.png',format='png',dpi=300)
+plt.colorbar(orientation='horizontal',shrink=0.6,label='Amplitude');
+plt.savefig(fname='location-new.png',format='png',dpi=300)
 plt.show()
 
 ## All
-jj=2
+jj=0
 wfd=np.load('wfd-tri-%d.npy'%jj)
 
 fignames=[]
