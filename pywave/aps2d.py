@@ -65,7 +65,7 @@ def aps2d(vel,nt=1501,dt=0.001,ax=[0,20,81],az=[0,20,81],ns=2,sx=[30,40],sz=[30,
 		source=dat.flatten(order='F').astype(np.float32); 
 		tri=1;
 	else:
-		source=np.concatenate([sx,sz,f,t,A],axis=0,dtype='float32'); #remember: source size is ns*6
+		source=np.concatenate([sx,sz,f,t,A],axis=0,dtype='float32'); #remember: source size is ns*5
 	
 	print(source)
 	print(nt,nx,nz)

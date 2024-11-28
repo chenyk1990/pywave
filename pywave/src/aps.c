@@ -670,7 +670,7 @@ static PyObject *aps2dc(PyObject *self, PyObject *args){
 // 	{ndata=nx*ny*nz;}
 // 	else
 // 	{ndata=nx*ny*nt;}
-	ndata=nx*ny*nz;
+	ndata=nx*nz;
 
 // 	printf("n1=%d,nw=%d,nt=%d 22\n",n1,nw,nt);
 	
@@ -1085,6 +1085,7 @@ static PyObject *aps2dc(PyObject *self, PyObject *args){
     /*do the work*/
     psm2d(wvfld, dat, dat_v, img, vel2, par, tri);
 	
+	printf("psm2d done\n");
     if (tri) {
 //       np_floatwrite(img,nz1*ny1*nx1,Fo);
     } else {
@@ -1116,7 +1117,7 @@ static PyObject *aps2dc(PyObject *self, PyObject *args){
 	else
 	nwfd=0;
 	
-	dims[0]=nt*nx1*+nwfd;dims[1]=1;
+	dims[0]=nt*nx1+nwfd;dims[1]=1;
 	vecout=(PyArrayObject *) PyArray_SimpleNew(1,dims,NPY_FLOAT);
 	
 	for(i=0;i<nt*nx1;i++)

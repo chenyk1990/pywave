@@ -370,18 +370,18 @@ int psm2d(float **wvfld, float **dat, float **dat_v, float *img, float *vel, psm
     /*survey parameters*/
     int   nx, nz;
     float dx, dz;
-    int   n_srcs;
+    int   ns;
     int   *spx, *spz;
-    int   gpz, gpx, gpl;
+    int   gpz, gpx, gplx;
     int   gpz_v, gpx_v, gpl_v;
-    int   snap;
+    int   jsnap;
     /*fft related*/
     bool  cmplx;
     int   pad1;
     /*absorbing boundary*/
     bool abc;
-    int nbt, nbb, nbl, nbr;
-    float ct,cb,cl,cr;
+    int nbt, nbb, nblx, nbrx;
+    float ct,cb,clx,crx;
     /*source parameters*/
     int src; /*source type*/
     int nt;
@@ -412,27 +412,27 @@ int psm2d(float **wvfld, float **dat, float **dat_v, float *img, float *vel, psm
     nz    = par->nz;
     dx    = par->dx;
     dz    = par->dz;
-    n_srcs= par->n_srcs;
+    ns= par->ns;
     spx   = par->spx;
     spz   = par->spz;
     gpz   = par->gpz;
     gpx   = par->gpx;
-    gpl   = par->gpl;
+    gplx   = par->gplx;
     gpz_v = par->gpz_v;
     gpx_v = par->gpx_v;
     gpl_v = par->gpl_v;
-    snap  = par->snap;
+    jsnap  = par->jsnap;
     cmplx = par->cmplx;
     pad1  = par->pad1;
     abc   = par->abc;
     nbt   = par->nbt;
     nbb   = par->nbb;
-    nbl   = par->nbl;
-    nbr   = par->nbr;
+    nblx   = par->nblx;
+    nbrx   = par->nbrx;
     ct    = par->ct;
     cb    = par->cb;
-    cl    = par->cl;
-    cr    = par->cr;
+    clx    = par->clx;
+    crx    = par->crx;
     src   = par->src;
     nt    = par->nt;
     dt    = par->dt;
@@ -455,7 +455,7 @@ int psm2d(float **wvfld, float **dat, float **dat_v, float *img, float *vel, psm
 //     if (verb) np_warning(">>>> Using %d threads <<<<<", nth);
 
     nz1 = nz-nbt-nbb;
-    nx1 = nx-nbl-nbr;
+    nx1 = nx-nblx-nbrx;
 
     nk = fft2_init(cmplx,pad1,nz,nx,&nz2,&nx2);
     nzx = nz*nx;
@@ -465,13 +465,13 @@ int psm2d(float **wvfld, float **dat, float **dat_v, float *img, float *vel, psm
     dkx = 1./(nx2*dx); kx0 = -0.5/dx;
     nkz = (cmplx)? nz2:(nz2/2+1);
 //     if(nk!=nx2*nkz) np_error("wavenumber dimension mismatch!");
-    fprintf("dkz=%f,dkx=%f,kz0=%f,kx0=%f\n",dkz,dkx,kz0,kx0);
-    fprintf("nk=%d,nkz=%d,nz2=%d,nx2=%d\n",nk,nkz,nz2,nx2);
+    printf("dkz=%f,dkx=%f,kz0=%f,kx0=%f\n",dkz,dkx,kz0,kx0);
+    printf("nk=%d,nkz=%d,nz2=%d,nx2=%d\n",nk,nkz,nz2,nx2);
 
     if(abc)
-      abc_init(nz,nx,1,nz2,nx2,1,nbt,nbb,nbl,nbr,0,0,ct,cb,cl,cr,cl,cr);
+      abc_init(nz,nx,1,nz2,nx2,1,nbt,nbb,nblx,nbrx,0,0,ct,cb,clx,crx,clx,crx);
 
-//       abc_init(nz,nx,nz2,nx2,nbt,nbb,nbl,nbr,ct,cb,cl,cr);
+//       abc_init(nz,nx,nz2,nx2,nbt,nbb,nbl,nbrx,ct,cb,cl,cr);
   
     /* allocate and read/initialize arrays */
     vv     = np_floatalloc(nzx); 
@@ -482,8 +482,8 @@ int psm2d(float **wvfld, float **dat, float **dat_v, float *img, float *vel, psm
     cwave  = np_complexalloc(nk);
     cwavem = np_complexalloc(nk);
     if (!tri && src==0) {
-      rick = np_floatalloc2(nt,n_srcs);
-      for (i=0; i<n_srcs; i++) {
+      rick = np_floatalloc2(nt,ns);
+      for (i=0; i<ns; i++) {
 	for (it=0; it<nt; it++) {
 	  rick[i][it] = 0.f;
 	}
@@ -532,7 +532,7 @@ int psm2d(float **wvfld, float **dat, float **dat_v, float *img, float *vel, psm
     /* MAIN LOOP */
     for (it=it1; it!=it2; it+=its) {
       
-        if(verb) np_warning("it=%d/%d;",it,nt);
+        if(verb) printf("it=%d/%d;\n",it,nt);
 
 	/* matrix multiplication */
 	fft2(curr,cwave);
@@ -563,7 +563,7 @@ int psm2d(float **wvfld, float **dat, float **dat_v, float *img, float *vel, psm
 	if (tri) {
 	  /* inject data */
 	  if (NULL!=dat) {
-	    for (ix = 0; ix < gpl; ix++) {
+	    for (ix = 0; ix < gplx; ix++) {
 	      curr[gpz+(ix+gpx)*nz2] += vv[gpz+(ix+gpx)*nz]*dat[ix][it];
 	    }
 	  }
@@ -574,7 +574,7 @@ int psm2d(float **wvfld, float **dat, float **dat_v, float *img, float *vel, psm
 	  }
 	} else {
 	  t = it*dt;
-	  for (i=0; i<n_srcs; i++) {
+	  for (i=0; i<ns; i++) {
 	    for(ix=-1;ix<=1;ix++) {
 	      for(iz=-1;iz<=1;iz++) {
 		ik = spz[i]+iz+nz*(spx[i]+ix);
@@ -598,7 +598,7 @@ int psm2d(float **wvfld, float **dat, float **dat_v, float *img, float *vel, psm
 	if (!tri) {
 	  /* record data */
 	  if (NULL!=dat) {
-	    for (ix = 0; ix < gpl; ix++) {
+	    for (ix = 0; ix < gplx; ix++) {
 	      dat[ix][it] = curr[gpz+(ix+gpx)*nz2];
 	    }
 	  }
@@ -610,22 +610,22 @@ int psm2d(float **wvfld, float **dat, float **dat_v, float *img, float *vel, psm
 	}
 
 	/* save wavefield */
-	if (snap > 0 && it%snap==0) {
+	if (jsnap > 0 && it%jsnap==0) {
 	  for (ix=0; ix<nx1; ix++) {
 	    for (iz=0; iz<nz1; iz++) {
 	      i = iz + nz1*ix;
-	      j = iz+nbt + (ix+nbl)*nz2; /* padded grid */
-	      wvfld[it/snap][i] = curr[j];
+	      j = iz+nbt + (ix+nblx)*nz2; /* padded grid */
+	      wvfld[it/jsnap][i] = curr[j];
 	    }
 	  }
 	}
     }
-    if(verb) np_warning(".");
+    if(verb) printf(".\n");
 
     if (tri) {
       for (ix = 0; ix < nx1; ix++) {
 	for (iz = 0; iz < nz1; iz++) {
-	  img[iz + nz1*ix] = curr[iz+nbt + (ix+nbl)*nz2];
+	  img[iz + nz1*ix] = curr[iz+nbt + (ix+nblx)*nz2];
 	}
       }
     }
