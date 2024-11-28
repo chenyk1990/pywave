@@ -831,11 +831,11 @@ static PyObject *aps2dc(PyObject *self, PyObject *args){
     {
         tmp=*((float*)PyArray_GETPTR1(arrf2,i));
         spx[i]=tmp;
-        tmp=*((float*)PyArray_GETPTR1(arrf2,2*2+i));
+        tmp=*((float*)PyArray_GETPTR1(arrf2,2*1+i));
         spz[i]=tmp;
-        f0[i]=*((float*)PyArray_GETPTR1(arrf2,2*3+i));
-        t0[i]=*((float*)PyArray_GETPTR1(arrf2,2*4+i));
-        A[i]=*((float*)PyArray_GETPTR1(arrf2,2*5+i));
+        f0[i]=*((float*)PyArray_GETPTR1(arrf2,2*2+i));
+        t0[i]=*((float*)PyArray_GETPTR1(arrf2,2*3+i));
+        A[i]=*((float*)PyArray_GETPTR1(arrf2,2*4+i));
     }
     
     printf("There are %d sources to be simulated\n",ns);
@@ -985,7 +985,7 @@ static PyObject *aps2dc(PyObject *self, PyObject *args){
 	dat = np_floatalloc2(nt,gplx);
     for (i=0; i<nt*gplx; i++)
     {
-        dat[0][0][i]=*((float*)PyArray_GETPTR1(arrf2,i));
+        dat[0][i]=*((float*)PyArray_GETPTR1(arrf2,i));
     }
 	printf("Doing TRI, reading data done\n");
     }
@@ -1121,7 +1121,7 @@ static PyObject *aps2dc(PyObject *self, PyObject *args){
 	vecout=(PyArrayObject *) PyArray_SimpleNew(1,dims,NPY_FLOAT);
 	
 	for(i=0;i<nt*nx1;i++)
-		(*((float*)PyArray_GETPTR1(vecout,i))) = dat[0][0][i];
+		(*((float*)PyArray_GETPTR1(vecout,i))) = dat[0][i];
 		
 	if(jsnap>0)
 	{

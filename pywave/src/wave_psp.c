@@ -559,7 +559,7 @@ int psm2d(float **wvfld, float **dat, float **dat_v, float *img, float *vel, psm
 		curr[j] = c;
 	    }
 	}
-
+	  
 	if (tri) {
 	  /* inject data */
 	  if (NULL!=dat) {
@@ -577,8 +577,8 @@ int psm2d(float **wvfld, float **dat, float **dat_v, float *img, float *vel, psm
 	  for (i=0; i<ns; i++) {
 	    for(ix=-1;ix<=1;ix++) {
 	      for(iz=-1;iz<=1;iz++) {
-		ik = spz[i]+iz+nz*(spx[i]+ix);
-		j = spz[i]+iz+nz2*(spx[i]+ix);
+		ik = (spz[i]+nbt)+iz+nz*(spx[i]+nblx+ix);
+		j = (spz[i]+nbt)+iz+nz2*(spx[i]+nblx+ix);
 		if (src==0) {
 		  curr[j] += vv[ik]*rick[i][it]/(abs(ix)+abs(iz)+1);
 		} else {

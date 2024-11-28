@@ -52,7 +52,7 @@ print('dg=',dg)
 for ii in range(ng):
 	print("Group ",ii)
 	inds=np.linspace(ii*dg+0,ii*dg+dg-1,dg,dtype='int')
-	datas[:,inds,:,ii]=np.transpose(data[:,inds,:],(1, 0, 2))
+	datas[:,inds,:,ii]=np.transpose(data[:,inds,:],(1, 0, 2))#why?, (forgot)
 	[img,wfd]=aps3d(vel,nt,dt,ax=[0,dx,nx],ay=[0,dy,ny],az=[0,dz,nz],ifsnaps=1,jsnap=4,dat=datas[:,:,:,ii],tri=True);
 	print('wfd max,min',wfd.max(),wfd.min())
 	np.save('wfd-tri-%d'%ii,wfd)

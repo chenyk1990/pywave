@@ -1,7 +1,7 @@
 import numpy as np
 from apscfun import *
 
-def aps2d(vel,nt=1501,dt=0.001,ax=[0,20,81],az=[0,20,81],ns=2,sx=[30,40],sz=[30,40,50],f=[10,10],t=[0.2,0.35],A=[1,2],nbt=30,ct=0.01,jsnap=4,abc=True,ifsnaps=False,ps=True,tri=False,dat=None,verb=True):
+def aps2d(vel,nt=1501,dt=0.001,ax=[0,20,81],az=[0,20,81],ns=2,sx=[30,40],sz=[30,40],f=[10,10],t=[0.2,0.35],A=[1,2],nbt=30,ct=0.01,jsnap=4,abc=True,ifsnaps=False,ps=True,tri=False,dat=None,verb=True):
 	'''
 	aps2d: 2D acoustic wavefield modeling using the pseudo-spectral method  
 	
