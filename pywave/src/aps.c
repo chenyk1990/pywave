@@ -67,7 +67,7 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
     
     float oz,ox,oy; 
     int ifsnaps;
-    
+
     /*data and parameters interface*/
 	PyArg_ParseTuple(args, "OOiiiiiiiiiiiffffffff", &f1,&f2,&tri,&nt,&nx,&ny,&nz,&ns,&verb,&jsnap,&ifsnaps,&abc,&nbt,&ct,&dt,&ox,&dx,&oy,&dy,&oz,&dz);
 
@@ -179,7 +179,7 @@ static PyObject *aps3dc(PyObject *self, PyObject *args){
         for (it=0;it<nt;it++)
             if (it%jsnap==0) ntsnap++;
             
-    ifvpad=true;
+    ifvpad=1;
 
     par = (psmpar) np_alloc(1,sizeof(*par));
     vel = np_floatalloc(nz1*ny1*nx1); 	/*change on Jun 2022, YC*/
@@ -451,7 +451,7 @@ static PyObject *aps2dc(PyObject *self, PyObject *args){
         for (it=0;it<nt;it++)
             if (it%jsnap==0) ntsnap++;
             
-    ifvpad=true;
+    ifvpad=1;
 
     par = (psmpar) np_alloc(1,sizeof(*par));
     vel = np_floatalloc(nz1*nx1); 	/*change on Jun 2022, YC*/

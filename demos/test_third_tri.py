@@ -52,7 +52,7 @@ plt.show()
 ## Simulate data and wavefields
 [data,wfd]=aps3d(vel,nt,dt,ax=[0,dx,nx],ay=[0,dy,ny],az=[0,dz,nz],ifsnaps=1,jsnap=4);
 np.save('npys/data',data)
-# data=np.load('data.npy')
+# data=np.load('npys/data.npy')
 
 [n1,n2,n3]=data.shape
 # data_mask0=data
@@ -112,7 +112,7 @@ plt.savefig(fname='figs/data3d.png',format='png',dpi=300)
 plt.show()
 
 ## plot grouped 3D data
-data=np.load('data.npy')
+data=np.load('npys/data.npy')
 [n1,n2,n3]=data.shape
 ng=4
 datas=np.zeros([n1,n2,n3,ng])

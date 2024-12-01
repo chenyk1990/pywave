@@ -74,6 +74,7 @@ def aps3d(vel,nt=1501,dt=0.001,ax=[0,20,81],ay=[0,20,81],az=[0,20,81],ns=3,sx=[3
 	print(source)
 	print(nt,nx,ny,nz)
 	print(tri)
+	print('ns=',ns)
 	dout=aps3dc(vel,source,tri,nt,nx,ny,nz,ns,verb,jsnap,ifsnaps,abc,nbt,ct,dt,ox,dx,oy,dy,oz,dz);
 	
 	if jsnap>0:
