@@ -27,7 +27,7 @@ for ii in range(nx):
 		vel[:,ii]=3000;
 vel=np.transpose(vel,[1,0]);
 
-## plot 3D velocity
+## plot 2D velocity
 plt.imshow(vel,aspect='auto',cmap="seismic", extent=[0,dx*(nx-1),dz*(nz-1),0]);
 # plt.gca().invert_yaxis();
 plt.gca().set_xlabel("X (m)",fontsize='large', fontweight='normal')
@@ -53,7 +53,7 @@ plt.savefig(fname='data2d-active.png',format='png',dpi=300)
 plt.show()
 
 # plot3d(data,figname='data3d.png',format='png',dpi=300)
-## plot 3D wavefields
+## plot 2D wavefields
 fignames=[]
 for ii in range(0,wfd.shape[2],20):
 	print(ii)
