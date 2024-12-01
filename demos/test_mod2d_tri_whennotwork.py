@@ -58,7 +58,7 @@ plt.show()
 
 ## 
 ## save wavefields
-[data,wfd]=aps2d(vel,nt,dt,ax=[0,dx,nx],az=[0,dz,nz],ifsnaps=1,jsnap=4,verb=0,sx=[30,40],sz=[30,40],f=[10,10],t=[0.2,0.35],A=[1,1]);
+[data,wfd]=aps2d(vel,nt,dt,ax=[0,dx,nx],az=[0,dz,nz],ifsnaps=1,jsnap=4,verb=0,sx=[30,40],sz=[30,40],f=[10,10],t=[0.2,0.35],A=[1,2]);
 
 # plot3d(data,figname='data3d.png',format='png',dpi=300)
 ## plot 3D wavefields
