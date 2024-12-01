@@ -831,11 +831,11 @@ static PyObject *aps2dc(PyObject *self, PyObject *args){
     {
         tmp=*((float*)PyArray_GETPTR1(arrf2,i));
         spx[i]=tmp;
-        tmp=*((float*)PyArray_GETPTR1(arrf2,2*1+i));
+        tmp=*((float*)PyArray_GETPTR1(arrf2,ns*1+i));
         spz[i]=tmp;
-        f0[i]=*((float*)PyArray_GETPTR1(arrf2,2*2+i));
-        t0[i]=*((float*)PyArray_GETPTR1(arrf2,2*3+i));
-        A[i]=*((float*)PyArray_GETPTR1(arrf2,2*4+i));
+        f0[i]=*((float*)PyArray_GETPTR1(arrf2,ns*2+i));
+        t0[i]=*((float*)PyArray_GETPTR1(arrf2,ns*3+i));
+        A[i]=*((float*)PyArray_GETPTR1(arrf2,ns*4+i));
     }
     
     printf("There are %d sources to be simulated\n",ns);

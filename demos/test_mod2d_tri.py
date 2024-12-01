@@ -1,4 +1,4 @@
-## This DEMO is a 3D acoustic wave simulation using pseudo-spectral method
+## This DEMO is a 2D acoustic wave simulation using pseudo-spectral method
 # 
 #  COPYRIGHT: Yangkang Chen, 2024, The University of Texas at Austin
 
