@@ -64,7 +64,7 @@ for ii in range(0,wfd.shape[2],20):
 	figname='wfd2da-%d.png'%ii;fignames.append(figname);
 	plt.savefig(fname=figname,format='png',dpi=300)
 
-## plot 3D wavefield animation in GIF
+## plot 2D wavefield animation in GIF
 from pyseistr import gengif #pip install git+https://github.com/aaspip/pyseistr
 gengif(fignames,'wfd2ds-active.gif')
 

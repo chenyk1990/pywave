@@ -19,7 +19,7 @@ vel=np.zeros([nz,nx]);
 for ii in range(nx):
 		vel[:,ii]=v;
 
-## plot 3D velocity
+## plot 2D velocity
 plt.imshow(vel,aspect='auto',cmap="seismic");
 # plt.gca().invert_yaxis();
 plt.gca().set_xlabel("X (m)",fontsize='large', fontweight='normal')
@@ -51,7 +51,7 @@ plt.show()
 [data,wfd]=aps2d(vel,nt,dt,ax=[0,dx,nx],az=[0,dz,nz],ifsnaps=1,jsnap=4);
 
 # plot3d(data,figname='data3d.png',format='png',dpi=300)
-## plot 3D wavefields
+## plot 2D wavefields
 fignames=[]
 for ii in range(0,376-100,20):
 	print(ii)
@@ -63,7 +63,7 @@ for ii in range(0,376-100,20):
 	figname='wfd2d-%d.png'%ii;fignames.append(figname);
 	plt.savefig(fname=figname,format='png',dpi=300)
 
-## plot 3D wavefield animation in GIF
+## plot 2D wavefield animation in GIF
 from pyseistr import gengif #pip install git+https://github.com/aaspip/pyseistr
 gengif(fignames,'wfd2ds.gif')
 
