@@ -2,6 +2,17 @@
 # 
 #  COPYRIGHT: Yangkang Chen, 2024, The University of Texas at Austin
 
+import os
+
+if os.path.isdir('./npys') == False:  
+	os.makedirs('./npys',exist_ok=True)
+
+if os.path.isdir('./figs') == False:  
+	os.makedirs('./figs',exist_ok=True)
+	
+if os.path.isdir('./gifs') == False:  
+	os.makedirs('./gifs',exist_ok=True)
+	
 from pywave import aps3d
 import numpy as np
 import matplotlib.pyplot as plt
@@ -28,7 +39,7 @@ plt.gca().set_xlabel("X (m)",fontsize='large', fontweight='normal')
 plt.gca().set_ylabel("Y (m)",fontsize='large', fontweight='normal')
 plt.gca().set_zlabel("Z (m)",fontsize='large', fontweight='normal')
 plt.title('3D velocity model')
-plt.savefig(fname='vel3d.png',format='png',dpi=300)
+plt.savefig(fname='figs/vel3d.png',format='png',dpi=300)
 plt.show()
 
 
@@ -41,7 +52,7 @@ plt.gca().set_xlabel("X (m)",fontsize='large', fontweight='normal')
 plt.gca().set_ylabel("Y (m)",fontsize='large', fontweight='normal')
 plt.gca().set_zlabel("Time (s)",fontsize='large', fontweight='normal')
 plt.title('3D synthetic data')
-plt.savefig(fname='data3d.png',format='png',dpi=300)
+plt.savefig(fname='figs/data3d.png',format='png',dpi=300)
 plt.show()
 
 

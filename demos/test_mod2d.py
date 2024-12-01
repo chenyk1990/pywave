@@ -2,6 +2,17 @@
 # 
 #  COPYRIGHT: Yangkang Chen, 2024, The University of Texas at Austin
 
+import os
+
+if os.path.isdir('./npys') == False:  
+	os.makedirs('./npys',exist_ok=True)
+
+if os.path.isdir('./figs') == False:  
+	os.makedirs('./figs',exist_ok=True)
+	
+if os.path.isdir('./gifs') == False:  
+	os.makedirs('./gifs',exist_ok=True)
+	
 from pywave import aps3d,aps2d
 import numpy as np
 import matplotlib.pyplot as plt
@@ -27,7 +38,7 @@ plt.gca().set_ylabel("Z (m)",fontsize='large', fontweight='normal')
 plt.title('2D velocity model')
 plt.colorbar(orientation='horizontal',shrink=0.6,label='Velocity (m/s)');
 
-plt.savefig(fname='vel2d.png',format='png',dpi=300)
+plt.savefig(fname='figs/vel2d.png',format='png',dpi=300)
 plt.show()
 
 
@@ -43,7 +54,7 @@ plt.gca().set_xlabel("X (m)",fontsize='large', fontweight='normal')
 # plt.gca().set_ylabel("Y (m)",fontsize='large', fontweight='normal')
 plt.gca().set_ylabel("Time (s)",fontsize='large', fontweight='normal')
 plt.title('2D synthetic data')
-plt.savefig(fname='data2d.png',format='png',dpi=300)
+plt.savefig(fname='figs/data2d.png',format='png',dpi=300)
 plt.show()
 
 ## 
@@ -60,12 +71,12 @@ for ii in range(0,376-100,20):
 	plt.gca().set_xlabel("X (m)",fontsize='large', fontweight='normal')
 	plt.gca().set_ylabel("Z (m)",fontsize='large', fontweight='normal')
 	plt.title('2D wavefield at %g s'%(ii*dt*4))
-	figname='wfd2d-%d.png'%ii;fignames.append(figname);
+	figname='figs/wfd2d-%d.png'%ii;fignames.append(figname);
 	plt.savefig(fname=figname,format='png',dpi=300)
 
 ## plot 2D wavefield animation in GIF
 from pyseistr import gengif #pip install git+https://github.com/aaspip/pyseistr
-gengif(fignames,'wfd2ds.gif')
+gengif(fignames,'gifs/wfd2ds.gif')
 
 
 

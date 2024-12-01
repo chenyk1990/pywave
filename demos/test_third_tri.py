@@ -5,6 +5,17 @@
 # This script reproduces the synthetic examples in the following paper
 # Chen, Y., O.M. Saad, M. Bai, X. Liu, and S. Fomel, 2021, A compact program for 3D passive seismic source-location imaging, Seismological Research Letters, 92, 3187–3201.
 # 
+import os
+
+if os.path.isdir('./npys') == False:  
+	os.makedirs('./npys',exist_ok=True)
+
+if os.path.isdir('./figs') == False:  
+	os.makedirs('./figs',exist_ok=True)
+	
+if os.path.isdir('./gifs') == False:  
+	os.makedirs('./gifs',exist_ok=True)
+
 from pywave import aps3d
 import numpy as np
 import matplotlib.pyplot as plt
@@ -31,7 +42,7 @@ plt.gca().set_xlabel("X (m)",fontsize='large', fontweight='normal')
 plt.gca().set_ylabel("Y (m)",fontsize='large', fontweight='normal')
 plt.gca().set_zlabel("Z (m)",fontsize='large', fontweight='normal')
 plt.title('3D velocity model')
-plt.savefig(fname='vel3d.png',format='png',dpi=300)
+plt.savefig(fname='figs/vel3d.png',format='png',dpi=300)
 plt.show()
 
 
@@ -40,7 +51,7 @@ plt.show()
 
 ## Simulate data and wavefields
 [data,wfd]=aps3d(vel,nt,dt,ax=[0,dx,nx],ay=[0,dy,ny],az=[0,dz,nz],ifsnaps=1,jsnap=4);
-np.save('data',data)
+np.save('npys/data',data)
 # data=np.load('data.npy')
 
 [n1,n2,n3]=data.shape
@@ -55,12 +66,12 @@ for ii in range(ng):
 	datas[:,inds,:,ii]=np.transpose(data[:,inds,:],(1, 0, 2))#why?, (forgot)
 	[img,wfd]=aps3d(vel,nt,dt,ax=[0,dx,nx],ay=[0,dy,ny],az=[0,dz,nz],ifsnaps=1,jsnap=4,dat=datas[:,:,:,ii],tri=True);
 	print('wfd max,min',wfd.max(),wfd.min())
-	np.save('wfd-tri-%d'%ii,wfd)
+	np.save('npys/wfd-tri-%d'%ii,wfd)
 
 imag=1
 for ii in range(ng):
 	print("Group ",ii)
-	tmp=np.load('wfd-tri-%d.npy'%ii)
+	tmp=np.load('npys/wfd-tri-%d.npy'%ii)
 	imag=imag*tmp*tmp
 imag=np.sum(imag,axis=3)
 imag=imag/imag.max()
@@ -71,7 +82,7 @@ plt.gca().set_xlabel("X (m)",fontsize='large', fontweight='normal')
 plt.gca().set_ylabel("Y (m)",fontsize='large', fontweight='normal')
 plt.gca().set_zlabel("Z (m)",fontsize='large', fontweight='normal')
 plt.title('3D source-location image')
-plt.savefig(fname='imag3d-1.png',format='png',dpi=300)
+plt.savefig(fname='figs/imag3d-1.png',format='png',dpi=300)
 plt.show()
 
 plot3d(imag,frames=[40,40,40],figsize=(16,10),cmap=plt.cm.jet,z=np.arange(nz)*dz,x=np.arange(nx)*dz,y=np.arange(nz)*dz,barlabel='Amplitude',showf=False,close=False,vmin=0,vmax=0.5)
@@ -79,7 +90,7 @@ plt.gca().set_xlabel("X (m)",fontsize='large', fontweight='normal')
 plt.gca().set_ylabel("Y (m)",fontsize='large', fontweight='normal')
 plt.gca().set_zlabel("Z (m)",fontsize='large', fontweight='normal')
 plt.title('3D source-location image')
-plt.savefig(fname='imag3d-2.png',format='png',dpi=300)
+plt.savefig(fname='figs/imag3d-2.png',format='png',dpi=300)
 plt.show()
 
 plot3d(imag,frames=[50,50,50],figsize=(16,10),cmap=plt.cm.jet,z=np.arange(nz)*dz,x=np.arange(nx)*dz,y=np.arange(nz)*dz,barlabel='Amplitude',showf=False,close=False,vmin=0,vmax=0.1)
@@ -87,17 +98,17 @@ plt.gca().set_xlabel("X (m)",fontsize='large', fontweight='normal')
 plt.gca().set_ylabel("Y (m)",fontsize='large', fontweight='normal')
 plt.gca().set_zlabel("Z (m)",fontsize='large', fontweight='normal')
 plt.title('3D source-location image')
-plt.savefig(fname='imag3d-3.png',format='png',dpi=300)
+plt.savefig(fname='figs/imag3d-3.png',format='png',dpi=300)
 plt.show()
 
 ## plot 3D data
-data=np.load('data.npy')
+data=np.load('npys/data.npy')
 plot3d(data,z=np.arange(nt)*dt,x=np.arange(nx)*dz,y=np.arange(nz)*dz,showf=False,close=False)
 plt.gca().set_xlabel("X (m)",fontsize='large', fontweight='normal')
 plt.gca().set_ylabel("Y (m)",fontsize='large', fontweight='normal')
 plt.gca().set_zlabel("Time (s)",fontsize='large', fontweight='normal')
 plt.title('3D synthetic data')
-plt.savefig(fname='data3d.png',format='png',dpi=300)
+plt.savefig(fname='figs/data3d.png',format='png',dpi=300)
 plt.show()
 
 ## plot grouped 3D data
@@ -116,12 +127,12 @@ for ii in range(ng):
 	plt.gca().set_ylabel("Y (m)",fontsize='large', fontweight='normal')
 	plt.gca().set_zlabel("Time (s)",fontsize='large', fontweight='normal')
 	plt.title('3D synthetic data')
-	plt.savefig(fname='data3d-mask-%d.png'%ii,format='png',dpi=300)
+	plt.savefig(fname='figs/data3d-mask-%d.png'%ii,format='png',dpi=300)
 	plt.show()
 
 ## plot 3D wavefields
 jj=3
-wfd=np.load('wfd-tri-%d.npy'%jj)
+wfd=np.load('npys/wfd-tri-%d.npy'%jj)
 
 fignames=[]
 for ii in range(375,0,-20):
@@ -131,12 +142,12 @@ for ii in range(375,0,-20):
 	plt.gca().set_ylabel("Y (m)",fontsize='large', fontweight='normal')
 	plt.gca().set_zlabel("Z (m)",fontsize='large', fontweight='normal')
 	plt.title('3D wavefield at %g s'%(1.5-(375-ii)*dt*4))
-	figname='wfd3d-%d.png'%ii;fignames.append(figname);
+	figname='figs/wfd3d-%d.png'%ii;fignames.append(figname);
 	plt.savefig(fname=figname,format='png',dpi=300)
 	
 ## plot 3D wavefield animation in GIF
 from pyseistr import gengif #pip install git+https://github.com/aaspip/pyseistr
-gengif(fignames,'wfd3ds-tri-%d.gif'%jj)
+gengif(fignames,'gifs/wfd3ds-tri-%d.gif'%jj)
 
 
     
