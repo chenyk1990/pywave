@@ -58,11 +58,11 @@ plt.savefig(fname='figs/data3d-ps.png',format='png',dpi=300)
 plt.show()
 
 ## Below is for FD
-data=afd3d(vel,nt,dt,ax=[0,dx,nx],ay=[0,dy,ny],az=[0,dz,nz],jsnap=0);
-data=data.reshape(nt,nx,ny,order='F'); #[x,y,z]
+data2=afd3d(vel,nt,dt,ax=[0,dx,nx],ay=[0,dy,ny],az=[0,dz,nz],jsnap=0);
+data2=data2.reshape(nt,nx,ny,order='F'); #[x,y,z]
 
 ## plot 3D data
-plot3d(data,z=np.arange(nt)*dt,x=np.arange(nx)*dz,y=np.arange(nz)*dz,showf=False,close=False)
+plot3d(data2,z=np.arange(nt)*dt,x=np.arange(nx)*dz,y=np.arange(nz)*dz,showf=False,close=False)
 plt.gca().set_xlabel("X (m)",fontsize='large', fontweight='normal')
 plt.gca().set_ylabel("Y (m)",fontsize='large', fontweight='normal')
 plt.gca().set_zlabel("Time (s)",fontsize='large', fontweight='normal')
@@ -70,5 +70,23 @@ plt.title('3D synthetic data (FD)')
 plt.savefig(fname='figs/data3d-fd.png',format='png',dpi=300)
 plt.show()
 
-from pyseistr import gengif
+from pyseistr import gengif #pip install git+https://github.com/aaspip/pyseistr
 gengif(['figs/data3d-ps.png','figs/data3d-fd.png'],'gifs/data3d-psfd.gif')
+
+
+#plot traces
+ix=40
+iy=40
+t=np.linspace(0,(nt-1)*dt,nt)
+plt.figure(figsize=(10, 4))
+plt.plot(t,data[:,ix,iy],'k-', linewidth=2, label='PS')
+plt.plot(t,data2[:,ix,iy],'r--', linewidth=2, label='FD')
+plt.gca().legend(loc='lower right',fontsize='large');
+  
+plt.title('PS VS FD (ix=%g m, iy=%g m)'%(ix*dx,iy*dy),fontsize='large', fontweight='normal')
+plt.ylabel('Amplitude',fontsize='large', fontweight='normal')
+plt.xlabel('Time (s)',fontsize='large', fontweight='normal')
+plt.savefig(fname='figs/data3d-active-trace.png',format='png',dpi=300)
+plt.show()
+
+
