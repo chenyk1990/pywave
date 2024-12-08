@@ -281,8 +281,8 @@ static PyObject *afd3dc(PyObject *self, PyObject *args){
 	printf("par->verb=%d,par->ps=%d,par->vref=%g\n",par->verb,par->ps,par->vref);
 		
     /*do the work*/
-    psm(wvfld, dat, dat_v, img, vel2, par, tri);
-
+    fdm(wvfld, dat, dat_v, img, vel2, par, tri);
+    
     /*Below is the output part*/
     PyArrayObject *vecout;
     npy_intp dims[2];

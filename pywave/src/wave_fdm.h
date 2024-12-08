@@ -29,7 +29,7 @@
 // } * psmpar; /*psm parameters*/
 // /*^*/
 
-//int fdm(float **wvfld, float ***dat, float **dat_v, float *img, float *vel, psmpar par, bool tri);
+int fdm(float **wvfld, float ***dat, float **dat_v, float *img, float *vel, psmpar par, bool tri);
 /*< finite-difference method >*/
 
 int fdm2d(float **wvfld, float **dat, float **dat_v, float *img, float *vel, psmpar par, bool tri);

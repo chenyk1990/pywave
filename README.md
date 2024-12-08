@@ -220,7 +220,7 @@ The first is a data trace comparison, showing the stronger dispersion of FD
 <p align="center">
 <img src='https://github.com/chenyk1990/gallery/blob/main/pywave/data2d-active-tracenew.png' alt='comp' width=960/>
 
-The first is a wavefield trace comparison, showing the stronger dispersion of FD
+The second is a wavefield trace comparison, showing the stronger dispersion of FD
 <p align="center">
 <img src='https://github.com/chenyk1990/gallery/blob/main/pywave/data2d-active-trace2new.png' alt='comp' width=960/>
 
