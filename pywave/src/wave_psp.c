@@ -444,16 +444,6 @@ int psm2d(float **wvfld, float **dat, float **dat_v, float *img, float *vel, psm
     vref  = par->vref;
     
 
-// #ifdef _OPENMP
-// #pragma omp parallel
-//     {
-//       nth = omp_get_num_threads();
-//     }
-// #else
-//     nth = 1;
-// #endif
-//     if (verb) np_warning(">>>> Using %d threads <<<<<", nth);
-
     nz1 = nz-nbt-nbb;
     nx1 = nx-nblx-nbrx;
 
