@@ -74,6 +74,34 @@ plt.title('2D synthetic data (FD)')
 plt.savefig(fname='figs/data2d-active-fd.png',format='png',dpi=300)
 plt.show()
 
+#plot traces
+ix=20
+t=np.linspace(0,(nt-1)*dt,nt)
+plt.figure(figsize=(20, 8))
+plt.plot(t,data[:,ix],'k-', linewidth=2, label='PS')
+plt.plot(t,data2[:,ix],'r--', linewidth=2, label='FD')
+plt.gca().legend(loc='lower right',fontsize='large');
+  
+plt.title('PS VS FD (ix=%g m)'%(ix*dx),fontsize='large', fontweight='normal')
+plt.ylabel('Amplitude',fontsize='large', fontweight='normal')
+plt.xlabel('Time (s)',fontsize='large', fontweight='normal')
+plt.savefig(fname='figs/data2d-active-trace.png',format='png',dpi=300)
+plt.show()
+
+#plot 1D wavefield 
+it=120
+iz=20
+x=np.linspace(0,(nx-1)*dx,nx)
+plt.figure(figsize=(20, 8))
+plt.plot(x,wfd[iz,:,it],'k-', linewidth=2, label='PS')
+plt.plot(x,wfd2[iz,:,it],'r--', linewidth=2, label='FD')
+plt.gca().legend(loc='lower right',fontsize='large');
+  
+plt.title('PS VS FD (iz=%g m, it=%g s)'%(iz*dz,it*dt*4),fontsize='large', fontweight='normal')
+plt.ylabel('Amplitude',fontsize='large', fontweight='normal')
+plt.xlabel('Time (s)',fontsize='large', fontweight='normal')
+plt.savefig(fname='figs/data2d-active-trace2.png',format='png',dpi=300)
+plt.show()
 
 # plot 2D wavefields (PS)
 fignames=[]
