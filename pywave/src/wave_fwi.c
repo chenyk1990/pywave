@@ -16,6 +16,7 @@
 // #include "wave_gradient.h"
 #include "wave_fwi.h"
 #include "wave_fwiutil.h"
+#include "wave_fwigradient.h"
 /*^*/
 
 // void fwi(np_file Fdat, np_file Finv, np_file Fgrad, np_sou soupar, np_acqui acpar, np_vec array, np_fwi fwipar, np_optim optpar, bool verb, int media)
@@ -128,14 +129,14 @@ void lstri(float ***data, float ***mwt, float ****src, np_acqui acpar, np_vec ar
 
 //             if (paspar->inv) {
                 /* shift pointer and load data */
-                dd=data+acpar->nt*acpar->nx*is;
+                dd=data[0]+acpar->nt*acpar->nx*is;
 //             } else {
                 /* shift pointer and load data */
-                ww=src+acpar->nt*acpar->nz*acpar->nx*is;
+                ww=src[0]+acpar->nt*acpar->nz*acpar->nx*is;
 //             }
 
             /* do the computation */
-//             lstri_op(dd, NULL, ww, mwt, acpar, array, paspar, verb);
+            lstri_op(dd, NULL, ww, mwt, acpar, array, paspar, verb);
 
 //             if (paspar->inv) {
 //                 /* write source */

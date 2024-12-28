@@ -54,6 +54,15 @@ kiss_fft_cpx np_cmplx(float re, float im)
     return c;
 }
 
+np_double_complex np_dcmplx(double re, double im)
+/*< complex number >*/
+{
+    np_double_complex c;
+    c.r = re;
+    c.i = im;
+    return c;
+}
+
 double np_creal(np_double_complex c)
 /*< real part >*/
 {

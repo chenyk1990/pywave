@@ -424,36 +424,59 @@ void dot_product(int n, float *a, float *b, float *product)
 // 	fprintf(fp,"%3d   %3.2e  %3.2e   %3.2e  %3.2e  %3d       %3d      %4d\n", iter, opt->fk, opt->fk/opt->f0, opt->gk_norm, opt->alpha, opt->ipair, opt->ils, opt->igrad);
 // }
 // 
-// np_pas passive_init(np_acqui acpar)
-// /*< read data, initialize variables and prepare acquisition geometry >*/
-// {
-//     np_pas paspar;
-// 
-//     paspar = (np_pas) np_alloc(1,sizeof(*paspar));
-// 
-//     if(!np_getbool("inv", &paspar->inv)) paspar->inv=false; /* inversion flag */
-//     if(!np_getbool("onlysrc", &paspar->onlysrc)) paspar->onlysrc=false;  /* only invert for source (vel known), active when inv=y */
-//     if(!np_getbool("onlyvel", &paspar->onlyvel)) paspar->onlyvel=false;  /* only invert for vel (source known), active when inv=y */
-//     if(!np_getbool("sw", &paspar->sw)) paspar->sw=false;  /* sliding window normalization */
-//     if(!np_getbool("ctr", &paspar->ctr)) paspar->ctr=false; /* cross-correlation time-reversal imaging */
-//     if(!np_getbool("precsrc", &paspar->prec)) paspar->prec=false; /* source inversion preconditioning */
-//     if(!np_getbool("hidesrc", &paspar->hidesrc)) paspar->hidesrc=false; /* hide source footprint in fwi */
-//     if(!np_getint("nitersrc", &paspar->niter)) paspar->niter=1;   /* num of iter'ns for source inversion */
-//     if(!np_getint("ngrp", &paspar->ngrp))   paspar->ngrp=1; /* number of sub-groups of receivers */
-//     if(!np_getint("size", &paspar->size))   paspar->size=0; /* sliding window radius */
-//     if(!np_getint("rectzsrc", &paspar->rectz)) paspar->rectz=1; /* source smoothing in z before masking */
-//     if(!np_getint("rectxsrc", &paspar->rectx)) paspar->rectx=1; /* source smoothing in x before masking */
-//     if(!np_getint("recttsrc", &paspar->rectt)) paspar->rectt=50; /* source smoothing in t before masking */
-//     if(!np_getint("repeatsrc", &paspar->repeat)) paspar->repeat=1; /* source smoothing repeatation times */
-//     if(!np_getfloat("perc", &paspar->perc)) paspar->perc=1.0f; /* padding percentatge for swnorm */
-//     if(!np_getfloat("hard", &paspar->hard)) paspar->hard=0.1f; /* hard thresholding for masking */
-// 
-//     if(paspar->onlyvel && paspar->onlysrc) np_error("Error: onlyvel and onlysrc cannot both be true!");
-//     if(paspar->inv) {
-//         if(paspar->onlyvel) np_warning("inverting for velocity only ...");
-//         else if(paspar->onlysrc) np_warning("inverting for source only ...");
-//         else np_warning("inverting for both velocity and source ...");
-//     } else np_warning("forward modeling ...");
-// 
-//     return paspar;
-// }
+np_pas passive_init(np_acqui acpar)
+/*< read data, initialize variables and prepare acquisition geometry >*/
+{
+    np_pas paspar;
+
+    paspar = (np_pas) np_alloc(1,sizeof(*paspar));
+
+//     if(!np_getbool("inv", &paspar->inv)) 
+    paspar->inv=false; /* inversion flag */
+//     if(!np_getbool("onlysrc", &paspar->onlysrc)) 
+    paspar->onlysrc=false;  /* only invert for source (vel known), active when inv=y */
+//     if(!np_getbool("onlyvel", &paspar->onlyvel)) 
+    paspar->onlyvel=false;  /* only invert for vel (source known), active when inv=y */
+//     if(!np_getbool("sw", &paspar->sw)) 
+    paspar->sw=false;  /* sliding window normalization */
+//     if(!np_getbool("ctr", &paspar->ctr)) 
+    paspar->ctr=false; /* cross-correlation time-reversal imaging */
+//     if(!np_getbool("precsrc", &paspar->prec)) 
+    paspar->prec=false; /* source inversion preconditioning */
+//     if(!np_getbool("hidesrc", &paspar->hidesrc)) 
+    paspar->hidesrc=false; /* hide source footprint in fwi */
+//     if(!np_getint("nitersrc", &paspar->niter)) 
+    paspar->niter=1;   /* num of iter'ns for source inversion */
+//     if(!np_getint("ngrp", &paspar->ngrp))   
+    paspar->ngrp=1; /* number of sub-groups of receivers */
+//     if(!np_getint("size", &paspar->size))   
+    paspar->size=0; /* sliding window radius */
+//     if(!np_getint("rectzsrc", &paspar->rectz)) 
+    paspar->rectz=1; /* source smoothing in z before masking */
+//     if(!np_getint("rectxsrc", &paspar->rectx)) 
+    paspar->rectx=1; /* source smoothing in x before masking */
+//     if(!np_getint("recttsrc", &paspar->rectt)) 
+    paspar->rectt=50; /* source smoothing in t before masking */
+//     if(!np_getint("repeatsrc", &paspar->repeat)) 
+    paspar->repeat=1; /* source smoothing repeatation times */
+//     if(!np_getfloat("perc", &paspar->perc)) 
+    paspar->perc=1.0f; /* padding percentatge for swnorm */
+//     if(!np_getfloat("hard", &paspar->hard)) 
+    paspar->hard=0.1f; /* hard thresholding for masking */
+
+    if(paspar->onlyvel && paspar->onlysrc) 
+    {
+    printf("Error: onlyvel and onlysrc cannot both be true!");
+    return NULL;
+    }
+
+    if(paspar->inv) {
+        if(paspar->onlyvel) printf("inverting for velocity only ...\n");
+        else if(paspar->onlysrc) printf("inverting for source only ...\n");
+        else printf("inverting for both velocity and source ...\n");
+    } else printf("forward modeling ...\n");
+
+
+
+    return paspar;
+}

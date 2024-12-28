@@ -38,6 +38,9 @@
 
 kiss_fft_cpx np_cmplx(float re, float im);
 
+np_double_complex np_dcmplx(double re, double im);
+/*< complex number >*/
+
 double np_creal(np_double_complex c);
 /*< real part >*/
 

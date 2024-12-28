@@ -171,4 +171,7 @@ void copy(int n, float *a, float *b);
 void dot_product(int n, float *a, float *b, float *product);
 /*< dot product of two vectors >*/
 
+np_pas passive_init(np_acqui acpar);
+/*< read data, initialize variables and prepare acquisition geometry >*/
+
 #endif

@@ -55,8 +55,8 @@ plt.plot(src[115,260,:,0]);
 plt.show()
 
 ## generate data
-mypar={'nz':130, 'nx':334, 'dz': 0.008, 'dx': 0.012, 'z0': 0, 'x0': 0,
-		'nt': 3001, 'dt': 0.001, 't0': 0, 'nb':60, 'coef': 0.005, 'acqui_type': 1, 
+mypar={'nz':130, 'nx':334, 'dz': 0.008, 'dx': 0.012, 'oz': 0, 'ox': 0,
+		'nt': 3001, 'dt': 0.001, 'ot': 0, 'nb':60, 'coef': 0.005, 'acqui_type': 1, 
 		'inv': 0, 'waterz': -30, 'onlysrc': 0, 'onlyvel': 1, 'conv_error': 0.01}
 
 data=pfwi(vel,q,wavelet,src,data=None,mode=4,media=1,inv=0,verb=1,par=mypar);
