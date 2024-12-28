@@ -18,6 +18,11 @@ float ***np_floatalloc3 (size_t n1 /* fast dimension */,
 				   size_t n2 /* slower dimension */, 
 				   size_t n3 /* slowest dimension */);
 
+float ****np_floatalloc4 (size_t n1 /* fast dimension */, 
+				    size_t n2 /* slower dimension */, 
+				    size_t n3 /* slower dimension */, 
+				    size_t n4 /* slowest dimension */);
+
 int *np_intalloc (size_t n /* number of elements */);
 
 int **np_intalloc2 (size_t n1 /* fast dimension */, 

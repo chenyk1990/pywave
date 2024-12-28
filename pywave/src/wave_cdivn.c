@@ -12,10 +12,10 @@
 #include "wave_komplex.h"
 #include "wave_cdivn.h"
 
-#include "wave_triangle.h"
-#include "wave_trianglen.h"
-#include "wave_ntriangle.h"
-#include "wave_ntrianglen.h"
+#include "wave_ctriangle.h"
+#include "wave_ctrianglen.h"
+#include "wave_cntriangle.h"
+#include "wave_cntrianglen.h"
 #include "wave_decart.h"
 
 #define SF_MAX_DIM 9
