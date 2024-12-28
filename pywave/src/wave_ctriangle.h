@@ -1,5 +1,5 @@
-#ifndef triangle_h
-#define triangle_h
+#ifndef ctriangle_h
+#define ctriangle_h
 
 
 // #include "_bool.h"

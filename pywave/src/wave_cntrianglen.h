@@ -1,5 +1,5 @@
-#ifndef ntrianglen_h
-#define ntrianglen_h
+#ifndef cntrianglen_h
+#define cntrianglen_h
 
 #include "wave_dtype.h"
 

@@ -2,14 +2,14 @@
 import numpy as np
 from pfwicfun import *
 
-def pfwi(vel,q,wavelet,src,data=None,mode=1,media=1,inv=0,verb=1,nb=60,coef=0.005,acq=1,ss=[0,0.2,1],f0=10,waterz=-30,niter=30,conv_e=0.01,par=None):
+def pfwi(vel,q,wav,src,data=None,mode=1,media=1,inv=0,verb=1,nb=60,coef=0.005,acq=1,ss=[0,0.2,1],f0=10,waterz=-30,niter=30,conv_e=0.01,par=None):
 	'''
 	pfwi: inverting for velocity ( and source ) using passive data
 	
 	INPUT
 	vel: velocity model (2D)
 	q: quality factor model (2D)
-	wavelet: source wavelet (1D)
+	wav: source wavelet (1D)
 	src: source position,time,index (4D, nz*nx*nt*ns) (to be inverted)
 	data: input data (nt*nx*ns)
 	mode: 1modeling2FWI3RTM4PFWI (if mode=1, input data=None;)
@@ -35,8 +35,8 @@ def pfwi(vel,q,wavelet,src,data=None,mode=1,media=1,inv=0,verb=1,nb=60,coef=0.00
 	elif mode==3:
 		pass
 	elif mode==4:
-		if paspar['inv']==True:
-			if paspar['onlysrc']==True:
+		if par['inv']==True:
+			if par['onlysrc']==True:
 				pass
 				datasrc=data.flatten(order='F').astype(np.float32);  #combined datasrc
 # 				src=lstric(datasrc, acpar, paspar, verb); #[src,mwt]=
@@ -44,18 +44,20 @@ def pfwi(vel,q,wavelet,src,data=None,mode=1,media=1,inv=0,verb=1,nb=60,coef=0.00
 				pass
 # 				vinv,grad,src,mwt]=pfwic(data, vel, [], src, [], soupar, acpar, array, fwipar, optpar, paspar, verb);
 		
-			if par['onlysrc']==1:	   #only src
+			if par['onlysrc']==True:	   #only src
 				vinv=None;grad=None;
 			else:
-				if par['onlyvel']==1:   #only vel
+				if par['onlyvel']==True:   #only vel
 					src=None;mwt=None;
 			data=None
 			
 		else:
+			print('start modeling in python')
 			vel=vel.flatten(order='F').astype(np.float32);
 			q=q.flatten(order='F').astype(np.float32);
 			wav=wav.flatten(order='F').astype(np.float32);
 			datasrc=src.flatten(order='F').astype(np.float32);  #combined datasrc
+			print('data flattening done in python')
 			#if mwt (model weight) is not considered right now
 
 			pararray=np.array([
@@ -71,18 +73,19 @@ def pfwi(vel,q,wavelet,src,data=None,mode=1,media=1,inv=0,verb=1,nb=60,coef=0.00
 			par['inv'],
 			par['ns'],
 			par['ds'],
-			par['s0'],
+			par['sz'],
 			par['nb'],				#boundary width
 			par['coef'],			#absorbing boundary coefficient
 			par['f0'],				#reference frequency
 			par['acqui_type'],		#1, fixed acquisition; 
-			par['interval',]		#wavefield storing interval
-			],dtype='float')
+			par['interval'],		#wavefield storing interval
+			],dtype=np.float32)
 			
 			print('par:',par)
 			print('len(pararray)',len(pararray))
 			
 			data=lstric(vel, q, wav, datasrc, pararray); #modeling, #array can be constructed internally
+# 			data=lstric(pararray); #modeling, #array can be constructed internally
 			vinv=[];grad=[];mwt=[];src=[];
 
 	else:
@@ -121,8 +124,11 @@ def fillpar(par):
 	'nr':par['nx'],
 	'dr':par['dx'],
 	'r0':par['x0'],
-	'fhi':0.5/par['dt'];
-	'flo':0
+	'fhi':0.5/par['dt'],
+	'flo':0,
+	'onlysrc': True,
+	'onlyvel': False,
+	'inv': False
 	}
 	
 	kw.update(par)

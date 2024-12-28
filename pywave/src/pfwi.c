@@ -62,7 +62,7 @@ static PyObject *lstric(PyObject *self, PyObject *args){
     /*source parameters*/
 //     int src; /*source type*/
     int nt,ntsnap;
-    float *f0,*t0,*A;
+    float f0,t0,*A;
     /*misc*/
     int ps, tri; /*tri: time-reversal imaging*/
     float vref;
@@ -79,7 +79,8 @@ static PyObject *lstric(PyObject *self, PyObject *args){
     
     /*data and parameters interface*/
 	PyArg_ParseTuple(args, "OOOOO", &f1,&f2,&f3,&f4,&f5);
-
+// 	PyArg_ParseTuple(args, "O", &f5);
+	printf("Check 1\n");
 // 	printf("tri=%d,nt=%d,nx=%d,nz=%d,ns=%d\n",tri,nt,nx,nz,ns);
 // 	printf("verb=%d,jsnap=%d,ifsnaps=%d,abc=%d,nbt=%d\n",verb,jsnap,ifsnaps,abc,nbt);
 // 	printf("ct=%g,dt=%g,ox=%g,dx=%g,oz=%g,dz=%g\n",ct,dt,ox,dx,oz,dz);
@@ -207,14 +208,18 @@ static PyObject *lstric(PyObject *self, PyObject *args){
 // 			par['acqui_type'],		#1, fixed acquisition; 
 // 			par['interval',]		#wavefield storing interval
 // 			],dtype='float')
-			
-	float pararray[30];
+	printf("Check 2\n");
+		
+	float *pararray;
+	pararray= np_floatalloc(30);
 	float ***data, ****src, ***mwt;
-	
+	printf("Check 3\n");
     for (i=0; i<10; i++)
     {
         pararray[i]=*((float*)PyArray_GETPTR1(arrf5,i));
     }
+			
+	printf("Check 4\n");
     nz=pararray[0];
     nx=pararray[1];
     dz=pararray[2];
@@ -222,8 +227,10 @@ static PyObject *lstric(PyObject *self, PyObject *args){
     oz=pararray[4];
     ox=pararray[5];
     nt=pararray[6];
-    inv=pararray[7];
-    ns=pararray[8];
+    dt=pararray[7];
+    t0=pararray[8];
+    inv=pararray[9];
+    ns=pararray[10];
     
 // 	lstric(vel, q, wav, datasrc, pararray);
 
@@ -232,30 +239,30 @@ static PyObject *lstric(PyObject *self, PyObject *args){
 	printf("Reading data\n");
 // 	dat = np_floatalloc2(nt,gplx);
 
-	vel=np_floatalloc(nz*nx);
-	q=np_floatalloc(nz*nx);
-	wav=np_floatalloc(nt);
-	
-    for (i=0; i<nz*nx; i++)
-    {
-        vel[i]=*((float*)PyArray_GETPTR1(arrf1,i));
-        q[i]=*((float*)PyArray_GETPTR1(arrf2,i));
-    }
-    for (i=0; i<nt; i++)
-    {
-        wav[i]=*((float*)PyArray_GETPTR1(arrf3,i));
-    }
-    
-    if(inv)
-    {
-    	data=np_floatalloc3(nt,nx,ns);
-    	for (i=0;i<nx*nt*ns;i++)
-    		data[0][0][i]=*((float*)PyArray_GETPTR1(arrf4,i));
-    }else{
-    	src=np_floatalloc4(nz,nx,nt,ns);
-    	for (i=0;i<nz*nx*nt*ns;i++)
-    		src[0][0][0][i]=*((float*)PyArray_GETPTR1(arrf4,i));
-    }
+// 	vel=np_floatalloc(nz*nx);
+// 	q=np_floatalloc(nz*nx);
+// 	wav=np_floatalloc(nt);
+// 	
+//     for (i=0; i<nz*nx; i++)
+//     {
+//         vel[i]=*((float*)PyArray_GETPTR1(arrf1,i));
+//         q[i]=*((float*)PyArray_GETPTR1(arrf2,i));
+//     }
+//     for (i=0; i<nt; i++)
+//     {
+//         wav[i]=*((float*)PyArray_GETPTR1(arrf3,i));
+//     }
+//     
+//     if(inv)
+//     {
+//     	data=np_floatalloc3(nt,nx,ns);
+//     	for (i=0;i<nx*nt*ns;i++)
+//     		data[0][0][i]=*((float*)PyArray_GETPTR1(arrf4,i));
+//     }else{
+//     	src=np_floatalloc4(nz,nx,nt,ns);
+//     	for (i=0;i<nz*nx*nt*ns;i++)
+//     		src[0][0][0][i]=*((float*)PyArray_GETPTR1(arrf4,i));
+//     }
     
 //     lstri(data, mwt, src, acpar, array, paspar, bool verb);
     

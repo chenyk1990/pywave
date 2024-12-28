@@ -10,6 +10,8 @@
 #include "wave_fdm.h"
 #include "wave_freqfilt.h"
 #include "wave_fwiutil.h"
+#include "wave_triangle.h"
+#include "wave_decart.h"
 
 #define np_PI (3.14159265358979323846264338328)
 
@@ -82,9 +84,9 @@ void preparation(float *vv, float *qq, float *ww, np_acqui acpar, np_sou soupar,
 // 	array->ww=np_floatalloc(nt);
 	taue=np_floatalloc(nzx);
 
-	np_floatread(array->vv, nzx, vv);
-	np_floatread(array->qq, nzx, qq);
-	np_floatread(array->ww, nt, ww);
+// 	np_floatread(array->vv, nzx, vv);
+// 	np_floatread(array->qq, nzx, qq);
+// 	np_floatread(array->ww, nt, ww);
 	
 	array->vv=vv;
 	array->qq=qq;
@@ -93,8 +95,8 @@ void preparation(float *vv, float *qq, float *ww, np_acqui acpar, np_sou soupar,
 	/* calculate tau */
 	for(i=0; i<nzx; i++){
 		tmp=sqrtf(array->qq[i]*array->qq[i]+1);
-		taue[i]=(tmp+1)/(2.*SF_PI*acpar->f0*array->qq[i]);
-		array->taus[i]=(tmp-1)/(2.*SF_PI*acpar->f0*array->qq[i]);
+		taue[i]=(tmp+1)/(2.*np_PI*acpar->f0*array->qq[i]);
+		array->taus[i]=(tmp-1)/(2.*np_PI*acpar->f0*array->qq[i]);
 		array->tau[i]=taue[i]/array->taus[i]-1;
 	}
 
@@ -231,7 +233,7 @@ void residual_weighting(float **ww, int nt, int nr, int wtn1, int wtn2, int woff
 	float w[10];
 
 	for(it=0; it<10; it++){
-		w[it]=sinf(0.5*SF_PI*(it+1)/11.);
+		w[it]=sinf(0.5*np_PI*(it+1)/11.);
 	}
 
         if (oreo) {

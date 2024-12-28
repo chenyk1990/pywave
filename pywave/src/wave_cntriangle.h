@@ -1,5 +1,5 @@
-#ifndef ntriangle_h
-#define ntriangle_h
+#ifndef cntriangle_h
+#define cntriangle_h
 
 
 #include "wave_dtype.h"
