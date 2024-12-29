@@ -9,6 +9,9 @@
 #ifndef _fwiutil_h
 #define _fwiutil_h
 
+typedef void (*np_gradient)(float*,float*,float*);
+/*^*/
+
 typedef struct np_source{
 	float fhi;
 	float flo;

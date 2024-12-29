@@ -85,9 +85,11 @@ pfwi_module = Extension('pfwicfun', sources=['pywave/src/pfwi.c',
                                                 'pywave/src/wave_fwi.c',
                                                 'pywave/src/wave_fwiutil.c',
                                                 'pywave/src/wave_fwigradient.c',
+                                                'pywave/src/wave_fwilbfgs.c',
                                                 'pywave/src/wave_triutil.c',
                                                 'pywave/src/wave_bigsolver.c',
                                                 'pywave/src/wave_cgstep.c',
+                                                'pywave/src/wave_butter.c',
                                                 'pywave/src/wave_chain.c',
                                                 'pywave/src/wave_fdm.c',
                                                 'pywave/src/wave_psp.c',
@@ -112,9 +114,9 @@ pfwi_module = Extension('pfwicfun', sources=['pywave/src/pfwi.c',
                                                                                                                      
 setup(
     name="pywave",
-    version="0.0.2",
-    license='GNU General Public License, Version 3 (GPLv3)',
-    description="A python package of non-stationary predictive filtering for denoising and interpolation of multi-dimensional multi-channel seismic data",
+    version="0.0.3",
+    license='MIT License',
+    description="An open-source Python package for solving wave equations using various methods for educational purposes",
     long_description=long_description,
     author="pywave developing team",
     author_email="chenyk2016@gmail.com",
@@ -137,10 +139,10 @@ setup(
         "Programming Language :: Python :: Implementation :: CPython",
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: Physics",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)"
+        "License :: OSI Approved :: MIT License "
     ],
     keywords=[
-        "seismology", "earthquake seismology", "exploration seismology", "array seismology", "denoising", "science", "engineering", "structure", "local slope", "filtering"
+        "seismology", "seismic waves", "wave propagation", "earthquake seismology", "exploration seismology", "array seismology", "denoising", "science", "engineering"
     ],
     install_requires=[
         "numpy", "scipy", "matplotlib"

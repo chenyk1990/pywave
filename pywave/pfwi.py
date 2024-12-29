@@ -82,15 +82,48 @@ def pfwi(vel,q,wav,src,data=None,mode=1,media=1,inv=0,verb=1,nb=60,coef=0.005,ac
 # 				datasrc=data.flatten(order='F').astype(np.float32);  #combined datasrc
 # 				src=lstric(datasrc, acpar, paspar, verb); #[src,mwt]=
 			else:
-				pass
+				vel=vel.flatten(order='F').astype(np.float32);
+				q=q.flatten(order='F').astype(np.float32);
+				wav=wav.flatten(order='F').astype(np.float32);
+				
+				par['inv']=1;
+				
+				pararray=np.array([
+				par['nz'],
+				par['nx'],
+				par['dz'],
+				par['dx'],
+				par['oz'],
+				par['ox'],
+				par['nt'],
+				par['dt'],
+				par['ot'],
+				par['inv'],
+				par['ns'],
+				par['ds'],
+				par['os'],
+				par['sz'],
+				par['nb'],				#boundary width
+				par['coef'],			#absorbing boundary coefficient
+				par['f0'],				#reference frequency
+				par['acqui_type'],		#1, fixed acquisition; 
+				par['interval'],		#wavefield storing interval
+				par['niter']			#number of inversion iterations
+				],dtype=np.float32)
 # 				vinv,grad,src,mwt]=pfwic(data, vel, [], src, [], soupar, acpar, array, fwipar, optpar, paspar, verb);
-		
+				data=data.flatten(order='F').astype(np.float32);  #combined datasrc
+				src=src.flatten(order='F').astype(np.float32);  #combined datasrc
+				print(par)
+				print(data.shape,src.shape)
+				datasrc=np.concatenate([data,src],axis=0)
+				vinv=pfwic(vel, q, wav, datasrc, pararray); #in this case, vel is the smoothed model
+				vinv=vinv.reshape(par['nz'],par['nx'],par['niter'],order='F')
 			if par['onlysrc']==True:	   #only src
 				vinv=None;grad=None;
 			else:
 				if par['onlyvel']==True:   #only vel
-					src=None;mwt=None;
-			data=None
+					src=None;mwt=None;grad=None;
+# 			data=None
 			
 		else:
 			print('start modeling in python')

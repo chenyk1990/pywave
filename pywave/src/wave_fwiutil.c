@@ -14,10 +14,6 @@
 #include "wave_decart.h"
 
 #define np_PI (3.14159265358979323846264338328)
-
-typedef void (*np_gradient)(float*,float*,float*);
-/*^*/
-
 const float c0=-205./72, c1=8./5, c2=-1./5, c3=8./315, c4=-1./560;
 
 void preparation(float *vv, float *qq, float *ww, np_acqui acpar, np_sou soupar, np_vec array)
