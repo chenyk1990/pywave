@@ -217,7 +217,7 @@ static PyObject *lstric(PyObject *self, PyObject *args){
 	pararray= np_floatalloc(30);
 	float ***data, ****src, ***mwt;
 	printf("Check 3\n");
-    for (i=0; i<20; i++)
+    for (i=0; i<25; i++)
     {
         pararray[i]=*((float*)PyArray_GETPTR1(arrf5,i));
     }
@@ -242,11 +242,11 @@ static PyObject *lstric(PyObject *self, PyObject *args){
     f0=pararray[16];			/*reference frequency*/
 	atype=pararray[17];			/*1, fixed acquisition; */
 	interval=pararray[18];		/*wavefield storing interval*/
-
+	niter=pararray[19];		/*number of iterations*/
 			
 // 	lstric(vel, q, wav, datasrc, pararray);
 
-	printf("nt=%d,nx=%d,nz=%d,nt=%d,dt=%g,t0=%g,inv=%d,ns=%d\n",nt,nx,nz,nt,dt,ot,inv,ns);
+	printf("nt=%d,nx=%d,nz=%d,nt=%d,dt=%g,t0=%g,inv=%d,ns=%d，niter=%d, inv=%d\n",nt,nx,nz,nt,dt,ot,inv,ns,niter,inv);
 // 	printf("nt=%d,nx=%d,nz=%d,ns=%d\n",nt,nx,nz,ns);
 	
 	printf("Reading data\n");
@@ -325,6 +325,10 @@ static PyObject *lstric(PyObject *self, PyObject *args){
 
 	/*initialize paspar using acpar*/
 	paspar = passive_init(acpar);
+
+	paspar->inv=inv;
+	paspar->onlysrc=true;
+	paspar->niter=niter;
 
 	/* get prepared */
 	preparation(vel, q, wav, acpar, soupar, array);
@@ -465,11 +469,23 @@ static PyObject *lstric(PyObject *self, PyObject *args){
 // 	else
 // 	nwfd=0;
 	
+	if(inv)
+	{
+	dims[0]=nt*nx*nz*ns;dims[1]=1;
+	vecout=(PyArrayObject *) PyArray_SimpleNew(1,dims,NPY_FLOAT);
+	
+	for(i=0;i<nt*nx*nz*ns;i++)
+		(*((float*)PyArray_GETPTR1(vecout,i))) = src[0][0][0][i];
+	}
+	else
+	{
 	dims[0]=nt*nx*ns;dims[1]=1;
 	vecout=(PyArrayObject *) PyArray_SimpleNew(1,dims,NPY_FLOAT);
 	
 	for(i=0;i<nt*nx*ns;i++)
 		(*((float*)PyArray_GETPTR1(vecout,i))) = data[0][0][i];
+	}
+
 		
 // 	if(jsnap>0)
 // 	{

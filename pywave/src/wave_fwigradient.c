@@ -641,6 +641,8 @@ void lstri_op(float **dd, float **dwt, float ***ww, float ***mwt, np_acqui acpar
 
     /* apply time-reversal imaging linear operator */
     if (paspar->inv) {
+    	printf("In FWIgradient, niter=%d\n",paspar->niter);
+    	paspar->niter=10;
         if (NULL!=dwt) np_solver(timerev_lop,np_cgstep,acpar->nz*acpar->nx*acpar->nt,acpar->nt*acpar->nx,ww[0][0],dd[0],paspar->niter,"mwt",mwt[0][0],"wt",dwt[0],"verb",verb,"end");
         else np_solver(timerev_lop,np_cgstep,acpar->nz*acpar->nx*acpar->nt,acpar->nt*acpar->nx,ww[0][0],dd[0],paspar->niter,"mwt",mwt[0][0],"verb",verb,"end");
     } else {

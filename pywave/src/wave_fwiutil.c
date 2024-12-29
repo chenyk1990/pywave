@@ -446,7 +446,7 @@ np_pas passive_init(np_acqui acpar)
 //     if(!np_getbool("hidesrc", &paspar->hidesrc)) 
     paspar->hidesrc=false; /* hide source footprint in fwi */
 //     if(!np_getint("nitersrc", &paspar->niter)) 
-    paspar->niter=1;   /* num of iter'ns for source inversion */
+    paspar->niter=10;   /* num of iter'ns for source inversion */
 //     if(!np_getint("ngrp", &paspar->ngrp))   
     paspar->ngrp=1; /* number of sub-groups of receivers */
 //     if(!np_getint("size", &paspar->size))   

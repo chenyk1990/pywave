@@ -37,8 +37,49 @@ def pfwi(vel,q,wav,src,data=None,mode=1,media=1,inv=0,verb=1,nb=60,coef=0.005,ac
 	elif mode==4:
 		if par['inv']==True:
 			if par['onlysrc']==True:
-				pass
+				print('start source inversion in python')
+				vel=vel.flatten(order='F').astype(np.float32);
+				q=q.flatten(order='F').astype(np.float32);
+				wav=wav.flatten(order='F').astype(np.float32);
 				datasrc=data.flatten(order='F').astype(np.float32);  #combined datasrc
+				print('data flattening done in python')
+			#if mwt (model weight) is not considered right now
+			
+				par['inv']=1;
+				
+				pararray=np.array([
+				par['nz'],
+				par['nx'],
+				par['dz'],
+				par['dx'],
+				par['oz'],
+				par['ox'],
+				par['nt'],
+				par['dt'],
+				par['ot'],
+				par['inv'],
+				par['ns'],
+				par['ds'],
+				par['os'],
+				par['sz'],
+				par['nb'],				#boundary width
+				par['coef'],			#absorbing boundary coefficient
+				par['f0'],				#reference frequency
+				par['acqui_type'],		#1, fixed acquisition; 
+				par['interval'],		#wavefield storing interval
+				par['niter']			#number of inversion iterations
+				],dtype=np.float32)
+			
+				print('par:',par)
+				print('len(pararray)',len(pararray))
+			
+				src=lstric(vel, q, wav, datasrc, pararray); #modeling, #array can be constructed internally
+# 				data=lstric(pararray); #modeling, #array can be constructed internally
+				vinv=[];grad=[];mwt=[];src=src.reshape(par['nz'],par['nx'],par['nt'],par['ns'],order='F')
+# 				data=data.reshape(par['nt'],par['nx'],par['ns'],order='F')
+				data=[];
+# 				pass
+# 				datasrc=data.flatten(order='F').astype(np.float32);  #combined datasrc
 # 				src=lstric(datasrc, acpar, paspar, verb); #[src,mwt]=
 			else:
 				pass
@@ -80,6 +121,7 @@ def pfwi(vel,q,wav,src,data=None,mode=1,media=1,inv=0,verb=1,nb=60,coef=0.005,ac
 			par['f0'],				#reference frequency
 			par['acqui_type'],		#1, fixed acquisition; 
 			par['interval'],		#wavefield storing interval
+			par['niter']			#number of inversion iterations
 			],dtype=np.float32)
 			
 			print('par:',par)
@@ -131,7 +173,8 @@ def fillpar(par):
 	'flo':0,
 	'onlysrc': True,
 	'onlyvel': False,
-	'inv': False
+	'inv': False,
+	'niter': 10
 	}
 	
 	kw.update(par)
