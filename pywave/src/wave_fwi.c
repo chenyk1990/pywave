@@ -117,7 +117,7 @@ void lstri(float ***data, float ***mwt, float ****src, np_acqui acpar, np_vec ar
 {
     float **dd, ***ww;
     int nturn, iturn, is, rdn;
-
+	float sum=0;
 
 //     dd = np_floatalloc2(acpar->nt, acpar->nx);
 //     ww = np_floatalloc3(acpar->nz, acpar->nx, acpar->nt);
@@ -125,16 +125,34 @@ void lstri(float ***data, float ***mwt, float ****src, np_acqui acpar, np_vec ar
     if (paspar->inv) mwt = np_floatalloc3(acpar->nz, acpar->nx, acpar->nt);
     else mwt = NULL;
 
+	printf("in lstri, ns=%d \n",acpar->ns);
+	
     for(is=0; is<acpar->ns; is++){
 
 //             if (paspar->inv) {
                 /* shift pointer and load data */
-                dd=data[0]+acpar->nt*acpar->nx*is;
+//                 *dd=data[0][0]+acpar->nt*acpar->nx*is;
+			dd=data[is];
 //             } else {
                 /* shift pointer and load data */
-                ww=src[0]+acpar->nt*acpar->nz*acpar->nx*is;
+//                 **ww=src[0][0][0]+acpar->nt*acpar->nz*acpar->nx*is;
+			ww=src[is];
+
 //             }
 
+	printf("in lstri, is=%d, ns=%d \n",is,acpar->ns);
+	sum=0;
+	for(int ii=0;ii<acpar->nt*acpar->nz*acpar->nx;ii++)
+// 	sum=sum+ww[0][0][ii];
+	sum=sum+src[0][0][0][ii];
+	printf("sum1=%g\n",sum);
+	
+	sum=0;
+	for(int ii=0;ii<acpar->nt*acpar->nz*acpar->nx;ii++)
+// 	sum=sum+ww[0][0][ii];
+	sum=sum+ww[0][0][ii];
+	
+	printf("sum2=%g\n",sum);
             /* do the computation */
             lstri_op(dd, NULL, ww, mwt, acpar, array, paspar, verb);
 
@@ -150,6 +168,8 @@ void lstri(float ***data, float ***mwt, float ****src, np_acqui acpar, np_vec ar
 //                 fseeko(temp, is*acpar->nt*acpar->nx*sizeof(float), SEEK_SET);
 //                 fwrite(dd[0], sizeof(float), acpar->nt*acpar->nx, temp);
 //             }
+
+
     }
 
     

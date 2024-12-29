@@ -217,7 +217,7 @@ static PyObject *lstric(PyObject *self, PyObject *args){
 	pararray= np_floatalloc(30);
 	float ***data, ****src, ***mwt;
 	printf("Check 3\n");
-    for (i=0; i<10; i++)
+    for (i=0; i<20; i++)
     {
         pararray[i]=*((float*)PyArray_GETPTR1(arrf5,i));
     }
@@ -268,10 +268,13 @@ static PyObject *lstric(PyObject *self, PyObject *args){
     
     if(inv)
     {
+    	src=np_floatalloc4(nz,nx,nt,ns);
     	data=np_floatalloc3(nt,nx,ns);
     	for (i=0;i<nx*nt*ns;i++)
     		data[0][0][i]=*((float*)PyArray_GETPTR1(arrf4,i));
+    	
     }else{
+    	data=np_floatalloc3(nt,nx,ns);
     	src=np_floatalloc4(nz,nx,nt,ns);
     	for (i=0;i<nz*nx*nt*ns;i++)
     		src[0][0][0][i]=*((float*)PyArray_GETPTR1(arrf4,i));
@@ -326,12 +329,26 @@ static PyObject *lstric(PyObject *self, PyObject *args){
 	/* get prepared */
 	preparation(vel, q, wav, acpar, soupar, array);
 
+	float sum=0;
+	for(int ii=0;ii<acpar->nz*acpar->nx;ii++)
+	sum=sum+array->vv[ii];
+	printf("before sum0=%g\n",sum);
+	
+	
 
-
-
+	sum=0;
+	for(int ii=0;ii<acpar->nt*acpar->nz*acpar->nx;ii++)
+	sum=sum+src[0][0][0][ii];
+	printf("before sum=%g\n",sum);
+	
     lstri(data, mwt, src, acpar, array, paspar, verb);
     
-// 	printf("Doing TRI, reading data done\n");
+	sum=0;
+	for(int ii=0;ii<acpar->nt*acpar->nz*acpar->nx;ii++)
+	sum=sum+src[0][0][0][ii];
+	printf("before sum=%g\n",sum);
+    
+	printf("Doing TRI, reading data done\n");
 //     }
 
 // 	if(tri==0)

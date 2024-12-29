@@ -88,6 +88,7 @@ def pfwi(vel,q,wav,src,data=None,mode=1,media=1,inv=0,verb=1,nb=60,coef=0.005,ac
 			data=lstric(vel, q, wav, datasrc, pararray); #modeling, #array can be constructed internally
 # 			data=lstric(pararray); #modeling, #array can be constructed internally
 			vinv=[];grad=[];mwt=[];src=[];
+			data=data.reshape(par['nt'],par['nx'],par['ns'],order='F')
 
 	else:
 	

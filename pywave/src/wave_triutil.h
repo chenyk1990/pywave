@@ -1,7 +1,8 @@
 /* Time reversal imaging of passive seismic data linear operator */
-#ifndef _triutil_h
+#ifndef triutil_h
 
 #include <stdio.h>
+#include <stdbool.h>
 
 #define NOP 4 /* derivative operator half-size */
 #define C0 -205.0f/72.0f
@@ -73,18 +74,18 @@ void ctimerev(int ngrp, float ***ww, float **dd);
 /* absorbing boundary */
 // static float *decay=NULL;
 
-void abc_init(tri2d tri);
+void pfwiabc_init(tri2d tri);
 /*< initialization >*/
    
 
-void abc_close(void);
+void pfwiabc_close(void);
 /*< free memory allocation>*/
 
-void abc_apply(float *a /*2-D matrix*/,
+void pfwiabc_apply(float *a /*2-D matrix*/,
                tri2d tri);
 /*< boundary decay>*/
 
-void abc_cal(int nb  /* absorbing layer length*/, 
+void pfwiabc_cal(int nb  /* absorbing layer length*/, 
              float c /* decaying parameter*/,
              float* w /* output weight[nb] */);
 /*< calculate absorbing coefficients >*/

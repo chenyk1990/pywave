@@ -3,6 +3,9 @@
 #include "wave_alloc.h"
 #include "wave_triangle.h"
 #include "wave_trianglen.h"
+#include "wave_decart.h"
+#include "wave_conjgrad.h"
+
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -76,7 +79,7 @@ void timerev_init(bool verb, bool abc,
     }
 
     /* absorbing boundary condition */
-    abc_init(tr);
+    pfwiabc_init(tr);
 
 }
 
@@ -86,12 +89,12 @@ void timerev_lop(bool adj, bool add, int nm, int nd, float *mod, float *dat)
     int ix, iz, it;
     float **dd, ***ww;
 
-    if (nm!=tr->nz*tr->nx*tr->nt || nd!=tr->nt*tr->nx) np_error("%s: wrong dimensions",__FILE__);
+    if (nm!=tr->nz*tr->nx*tr->nt || nd!=tr->nt*tr->nx) 
+    {
+    printf("timerev_lop  wrong dimensions\n");
+    }
+//     np_error("%s: wrong dimensions",__FILE__);
     np_adjnull(adj, add, nm, nd, mod, dat);
-
-#ifdef _OPENMP
-#pragma omp parallel for default(shared) private(ix, iz)
-#endif
             for     (ix=0; ix<tr->nxpad; ix++)
                 for (iz=0; iz<tr->nzpad; iz++)
                 {
@@ -111,27 +114,23 @@ void timerev_lop(bool adj, bool add, int nm, int nd, float *mod, float *dat)
     ww[0][0] = mod;
     for (ix=1; ix<tr->nx*tr->nt; ix++) ww[0][ix] = ww[0][0]+ix*tr->nz; 
     for (it=1; it<tr->nt; it++) ww[it] = ww[0]+it*tr->nx;
-
+	
+	printf("Timerev_lop\n");
+	
     if (adj) { /* migration */
         
         for (it=tr->nt-1; it>-1; it--){
            
             /* 4 - apply abc */
-            if (tr->abc) abc_apply(u1[0],tr);
-            if (tr->abc) abc_apply(u0[0],tr);
+            if (tr->abc) pfwiabc_apply(u1[0],tr);
+            if (tr->abc) pfwiabc_apply(u0[0],tr);
 
             /* 3 - image source */
-#ifdef _OPENMP
-#pragma omp parallel for default(shared) private(ix, iz)
-#endif
             for     (ix=0; ix<tr->nx; ix++)
                 for (iz=0; iz<tr->nz; iz++)
                     ww[it][ix][iz] += u1[ix+tr->nb][iz+tr->nb]*vvpad[ix+tr->nb][iz+tr->nb];
 
             /* 2 - time stepping */
-#ifdef _OPENMP
-#pragma omp parallel for default(shared) private(ix, iz)
-#endif
             for     (ix=NOP; ix<tr->nxpad-NOP; ix++){
                 for (iz=NOP; iz<tr->nzpad-NOP; iz++){
                     u2[ix][iz] = LapT(u1,ix,iz,tr->idx2,tr->idz2,vvpad) + 2.0f*u1[ix][iz] - u0[ix][iz];
@@ -141,29 +140,20 @@ void timerev_lop(bool adj, bool add, int nm, int nd, float *mod, float *dat)
             tmp=u0; u0=u1; u1=u2; u2=tmp;
 
             /* 1 - inject data */
-#ifdef _OPENMP
-#pragma omp parallel for default(shared) private(ix)
-#endif
             for (ix=tr->nb; ix<tr->nb+tr->nx; ix++)
                 u1[ix][tr->depth] += dd[ix-tr->nb][it];
  
         } /* it loop */
 
     } else { /* modeling */
-    	
+    		printf("Timerev_lop modeling\n");
     	for (it=0; it<tr->nt; it++){
 
              /* 1 - record data */
-#ifdef _OPENMP
-#pragma omp parallel for default(shared) private(ix)
-#endif
             for (ix=tr->nb; ix<tr->nb+tr->nx; ix++)
                 dd[ix-tr->nb][it] += u1[ix][tr->depth];
            
             /* 2 - time stepping */
-#ifdef _OPENMP
-#pragma omp parallel for default(shared) private(ix, iz)
-#endif
             for     (ix=NOP; ix<tr->nxpad-NOP; ix++){
                 for (iz=NOP; iz<tr->nzpad-NOP; iz++){
                     u2[ix][iz] = Lap(u1,ix,iz,tr->idx2,tr->idz2,vvpad) + 2.0f*u1[ix][iz] - u0[ix][iz];
@@ -173,16 +163,13 @@ void timerev_lop(bool adj, bool add, int nm, int nd, float *mod, float *dat)
             tmp=u0; u0=u1; u1=u2; u2=tmp;
 
             /* 3 - inject source */
-#ifdef _OPENMP
-#pragma omp parallel for default(shared) private(ix, iz)
-#endif
             for     (ix=0; ix<tr->nx; ix++)
                 for (iz=0; iz<tr->nz; iz++)
                     u1[ix+tr->nb][iz+tr->nb] += ww[it][ix][iz]*vvpad[ix+tr->nb][iz+tr->nb];
 
             /* 4 - apply abc */
-            if (tr->abc) abc_apply(u0[0],tr);
-            if (tr->abc) abc_apply(u1[0],tr);
+            if (tr->abc) pfwiabc_apply(u0[0],tr);
+            if (tr->abc) pfwiabc_apply(u1[0],tr);
 
         } /* it loop */
         
@@ -195,7 +182,7 @@ void timerev_lop(bool adj, bool add, int nm, int nd, float *mod, float *dat)
 void timerev_close()
 /*< finalize >*/
 {
-    abc_close();
+    pfwiabc_close();
     free(tr);
     free(*vvpad); free(vvpad);
     free(*u0); free(u0);
@@ -209,9 +196,6 @@ void ctimerev(int ngrp, float ***ww, float **dd)
 {
     int ix, iz, it, ig, counter, *beg, *end;
 
-#ifdef _OPENMP
-#pragma omp parallel for default(shared) private(it,ix,iz)
-#endif
     for         (it=0; it<tr->nt; it++)
         for     (ix=0; ix<tr->nx; ix++)
             for (iz=0; iz<tr->nz; iz++)
@@ -229,16 +213,13 @@ void ctimerev(int ngrp, float ***ww, float **dd)
     end[ngrp-1] = tr->nx;
     if (tr->verb) {
         for (ig=0; ig<ngrp; ig++) {
-            np_warning("beg[%d]=%d",ig,beg[ig]);
-            np_warning("end[%d]=%d",ig,end[ig]);
+            printf("beg[%d]=%d\n",ig,beg[ig]);
+            printf("end[%d]=%d\n",ig,end[ig]);
         }
     }
 
     for (ig=0; ig<ngrp; ig++) { /* loop over subgroups of receivers */
 
-#ifdef _OPENMP
-#pragma omp parallel for default(shared) private(ix, iz)
-#endif
             for     (ix=0; ix<tr->nxpad; ix++)
                 for (iz=0; iz<tr->nzpad; iz++)
                 {
@@ -248,12 +229,9 @@ void ctimerev(int ngrp, float ***ww, float **dd)
                 }
 
         for (it=tr->nt-1; it>-1; it--){
-            if (tr->verb) np_warning("Time reversal: %d/%d;", it, 0);
+            if (tr->verb) printf("Time reversal: %d/%d;\n", it, 0);
 
             /* time stepping */
-#ifdef _OPENMP
-#pragma omp parallel for default(shared) private(ix, iz)
-#endif
             for     (ix=NOP; ix<tr->nxpad-NOP; ix++){
                 for (iz=NOP; iz<tr->nzpad-NOP; iz++){
                     u2[ix][iz] = Lap (u1,ix,iz,tr->idx2,tr->idz2,vvpad) + 2.0f*u1[ix][iz] - u0[ix][iz];
@@ -261,26 +239,20 @@ void ctimerev(int ngrp, float ***ww, float **dd)
             }
             /* rotate pointers */
             tmp=u0; u0=u1; u1=u2; u2=tmp;
-            if (tr->abc) abc_apply(u1[0],tr);
-            if (tr->abc) abc_apply(u0[0],tr);
+            if (tr->abc) pfwiabc_apply(u1[0],tr);
+            if (tr->abc) pfwiabc_apply(u0[0],tr);
 
             /* inject data */
-#ifdef _OPENMP
-#pragma omp parallel for default(shared) private(ix)
-#endif
             for (ix=tr->nb+beg[ig]; ix<tr->nb+end[ig]; ix++)
                 u1[ix][tr->depth] += dd[ix-tr->nb][it];
 
             /* image source */
-#ifdef _OPENMP
-#pragma omp parallel for default(shared) private(ix, iz)
-#endif
             for     (ix=0; ix<tr->nx; ix++)
                 for (iz=0; iz<tr->nz; iz++)
                     ww[it][ix][iz] *= u1[ix+tr->nb][iz+tr->nb];
 
         } /* it loop */
-        if (tr->verb) np_warning(".");
+        if (tr->verb) printf(".\n");
 
     } /* ig loop */
 
@@ -291,35 +263,28 @@ void ctimerev(int ngrp, float ***ww, float **dd)
 /* absorbing boundary */
 static float *decay=NULL;
 
-void abc_init(tri2d tri)
+void pfwiabc_init(tri2d tri)
 /*< initialization >*/
 {
     if(tri->nb) decay =  np_floatalloc(tri->nb);
-    abc_cal(tri->nb,tri->cb,decay);
+    pfwiabc_cal(tri->nb,tri->cb,decay);
 }
    
 
-void abc_close(void)
+void pfwiabc_close(void)
 /*< free memory allocation>*/
 {
     if(NULL!=decay) free(decay);
     decay = NULL;
 }
 
-void abc_apply(float *a /*2-D matrix*/,
+void pfwiabc_apply(float *a /*2-D matrix*/,
                tri2d tri) 
 /*< boundary decay>*/
 {
     int iz, ix;
 
-#ifdef _OPENMP
-#pragma omp parallel default(shared) private(iz,ix)
-{
-#endif
     /* top & bottom */
-#ifdef _OPENMP
-#pragma omp for
-#endif
     for (iz=0; iz < tri->nb; iz++) {  
         for (ix=0; ix < tri->nxpad; ix++) {
 	  a[tri->nzpad*ix +              iz] *= decay[iz];
@@ -327,30 +292,22 @@ void abc_apply(float *a /*2-D matrix*/,
         }
     }
     /* left & right */
-#ifdef _OPENMP
-#pragma omp for
-#endif
     for (iz=0; iz < tri->nzpad; iz++) {  
         for (ix=0; ix < tri->nb; ix++) {
 	  a[tri->nzpad*              ix  + iz] *= decay[ix];
 	  a[tri->nzpad*(tri->nxpad-1-ix) + iz] *= decay[ix];
         }
     }
-#ifdef _OPENMP
-}
-#endif
 }
 
-void abc_cal(int nb  /* absorbing layer length*/, 
+void pfwiabc_cal(int nb  /* absorbing layer length*/, 
              float c /* decaying parameter*/,
              float* w /* output weight[nb] */)
 /*< calculate absorbing coefficients >*/
 {
     int ib;
     if(!nb) return;
-#ifdef _OPENMP
-#pragma omp parallel for default(shared) private(ib)
-#endif
+
     for(ib=0; ib<nb; ib++){
         w[ib]=exp(-c*c*(nb-1-ib)*(nb-1-ib));
     }
@@ -364,9 +321,6 @@ void threshold(bool step, int n, float hard, float *dat)
 {
     int i;
 
-#ifdef _OPENMP
-#pragma omp parallel for default(shared) private(i)
-#endif
     for (i=0; i<n; i++) {
         if (dat[i]<hard) {
             if (step) dat[i] = 0.0f;
@@ -383,9 +337,6 @@ void absval(int n, float *dat)
 {
     int i;
 
-#ifdef _OPENMP
-#pragma omp parallel for default(shared) private(i)
-#endif
     for (i=0; i<n; i++)
         dat[i] = fabs(dat[i]);
 }
@@ -395,9 +346,6 @@ void autopow(int n, float p, float *dat)
 {
     int i;
 
-#ifdef _OPENMP
-#pragma omp parallel for default(shared) private(i)
-#endif
     for (i=0; i<n; i++)
         dat[i] = powf(fabs(dat[i]),p);
 }
@@ -439,12 +387,10 @@ void swnorm(bool verb, bool sw, int nz, int nx, int nt, int size, float perc, fl
 
     max_all = maxval(nzxt,dat);
     pad = max_all*perc/100.0f;
-    if(verb) np_warning("max_all=%g",max_all);
+    if(verb) printf("max_all=%g\n",max_all);
 
     dat0 = np_floatalloc(nzxt);
-#ifdef _OPENMP
-#pragma omp parallel for default(shared) private(i)
-#endif
+
     for (i=0; i<nzxt; i++) dat0[i] = dat[i];
 
     if (!sw) {
@@ -453,39 +399,30 @@ void swnorm(bool verb, bool sw, int nz, int nx, int nt, int size, float perc, fl
 
     } else {
 
-#ifdef _OPENMP
-#pragma omp parallel for default(shared) private(i,den,factor)
-#endif
         for (i=0; i<size; i++) {
-            if (verb) np_warning("i = %d/%d;",i,nt);
+            if (verb) printf("i = %d/%d;\n",i,nt);
             den = maxval(nzx*(i+1+size),dat0);
             if (den <= pad) den = pad;
             factor = 1.0f/den;
             scale(factor,nzx,dat+i*nzx);
         }
 
-#ifdef _OPENMP
-#pragma omp parallel for default(shared) private(i,den,factor)
-#endif
         for (i=size; i<nt-size; i++) {
-            if (verb) np_warning("i = %d/%d;",i,nt);
+            if (verb) printf("i = %d/%d;\n",i,nt);
             den = maxval(nzx*(2*size+1),dat0+(i-size)*nzx);
             if (den <= pad) den = pad;
             factor = 1.0f/den;
             scale(factor,nzx,dat+i*nzx);
         }
 
-#ifdef _OPENMP
-#pragma omp parallel for default(shared) private(i,den,factor)
-#endif
         for (i=nt-size; i<nt; i++) {
-            if (verb) np_warning("i = %d/%d;",i,nt);
+            if (verb) printf("i = %d/%d;\n",i,nt);
             den = maxval(nzx*(size+1+(nt-1-i)),dat0+(i-size)*nzx);
             if (den <= pad) den = pad;
             factor = 1.0f/den;
             scale(factor,nzx,dat+i*nzx);
         }
-        if (verb) np_warning(".");
+        if (verb) printf(".\n");
 
     }
 

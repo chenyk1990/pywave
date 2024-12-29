@@ -595,6 +595,7 @@ void lstri_op(float **dd, float **dwt, float ***ww, float ***mwt, np_acqui acpar
     float **vv1;
     int ix,iz,it;
 
+
     if (paspar->inv) {
         for         (it=0; it<acpar->nt; it++)
             for     (ix=0; ix<acpar->nx; ix++)
@@ -611,14 +612,16 @@ void lstri_op(float **dd, float **dwt, float ***ww, float ***mwt, np_acqui acpar
             for (it=0; it<acpar->nt; it++)
                 dd[ix][it] = 0.0f;
     }
-
+	printf("before timerev0\n");
     /* map 1d to 2d */
     vv1 = (float**) np_alloc (acpar->nx,sizeof(float*)); 
     vv1[0] = array->vv;
     for (ix=1; ix<acpar->nx; ix++) vv1[ix] = vv1[0]+ix*acpar->nz;
 
+	printf("before timerev\n");
     timerev_init(verb, true, acpar->nt, acpar->nx, acpar->nz, acpar->nb, acpar->rz-acpar->nb, acpar->dt, acpar->dx, acpar->dz, acpar->coef, vv1);
 
+	printf("before timerev2\n");
     /* calculate model weighting using correlative imaging condition */
 //     if (paspar->inv && paspar->prec) { 
 //         if (paspar->ctr) {
@@ -641,7 +644,9 @@ void lstri_op(float **dd, float **dwt, float ***ww, float ***mwt, np_acqui acpar
         if (NULL!=dwt) np_solver(timerev_lop,np_cgstep,acpar->nz*acpar->nx*acpar->nt,acpar->nt*acpar->nx,ww[0][0],dd[0],paspar->niter,"mwt",mwt[0][0],"wt",dwt[0],"verb",verb,"end");
         else np_solver(timerev_lop,np_cgstep,acpar->nz*acpar->nx*acpar->nt,acpar->nt*acpar->nx,ww[0][0],dd[0],paspar->niter,"mwt",mwt[0][0],"verb",verb,"end");
     } else {
+    	printf("before timerev3\n");
         timerev_lop(false, false, acpar->nz*acpar->nx*acpar->nt, acpar->nt*acpar->nx, ww[0][0], dd[0]);
+    	printf("before timerev4\n");
     }
     
     /* close */
