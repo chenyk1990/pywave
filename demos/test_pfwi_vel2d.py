@@ -89,7 +89,7 @@ np.save('datas',data);
 mypar['inv']=True;
 mypar['onlysrc']=False;
 mypar['onlyvel']=True;
-mypar['niter']=10;
+mypar['niter']=20;
 # data=np.load('datas.npy')
 print(vel_s.shape,q.shape,wavelet.shape,src.shape,data.shape)
 data2,vinv,grad,src2,mwt=pfwi(vel_s,q,wavelet,src=src,data=data,mode=4,media=1,inv=0,verb=1,par=mypar);
@@ -127,7 +127,7 @@ plt.subplot(1,3,2);
 plt.imshow(data2[:,:,0],aspect='auto',clim=(-0.5, 0.5),extent=[0,par['dx']*(par['nx']-1),par['dt']*(par['nt']-1),0]);
 plt.title("Simulated data"); plt.gca().set_yticks([]); plt.xlabel("Receiver (m)"); 
 plt.subplot(1,3,3);
-plt.imshow(data[:,:,0]-data[:,:,0],aspect='auto',clim=(-0.5, 0.5),extent=[0,par['dx']*(par['nx']-1),par['dt']*(par['nt']-1),0]);
+plt.imshow(data[:,:,0]-data2[:,:,0],aspect='auto',clim=(-0.5, 0.5),extent=[0,par['dx']*(par['nx']-1),par['dt']*(par['nt']-1),0]);
 plt.title("Difference"); plt.gca().set_yticks([]); plt.xlabel("Receiver (m)"); 
 plt.savefig(fname='test_pfwi_vel2d_data.png',format='png',dpi=300)
 plt.show()
@@ -142,7 +142,7 @@ plt.subplot(1,6,2);
 plt.imshow(data2[:,:,0],aspect='auto',clim=(-0.5, 0.5),extent=[0,par['dx']*(par['nx']-1),par['dt']*(par['nt']-1),0]);
 plt.title("Simulated data"); plt.gca().set_yticks([]); plt.xlabel("Receiver (km)"); 
 plt.subplot(1,6,3);
-plt.imshow(data[:,:,0]-data[:,:,0],aspect='auto',clim=(-0.5, 0.5),extent=[0,par['dx']*(par['nx']-1),par['dt']*(par['nt']-1),0]);
+plt.imshow(data[:,:,0]-data2[:,:,0],aspect='auto',clim=(-0.5, 0.5),extent=[0,par['dx']*(par['nx']-1),par['dt']*(par['nt']-1),0]);
 plt.title("Difference"); plt.gca().set_yticks([]); plt.xlabel("Receiver (km)"); 
 # plt.savefig(fname='test_pfwi_vel2d_data.png',format='png',dpi=300)
 
