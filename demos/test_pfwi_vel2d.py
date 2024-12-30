@@ -62,8 +62,8 @@ mypar={'nz':130, 'nx':334, 'dz': 0.008, 'dx': 0.012, 'oz': 0, 'ox': 0, 'ns': 3,
 		'inv': 0, 'waterz': -30, 'onlysrc': 0, 'onlyvel': 1, 'conv_error': 0.01, 'niter': 30}
 
 ## Modeling part
-# data,vinv,grad,src,mwt=pfwi(vel,q,wavelet,src,data=None,mode=4,media=1,inv=0,verb=1,par=mypar);
-# np.save('datas',data);
+data,_,_,_,_=pfwi(vel,q,wavelet,src,data=None,mode=4,media=1,inv=0,verb=1,par=mypar);
+np.save('datas',data);
 # plt.subplot(1,3,1);
 # plt.imshow(data[:,:,0],aspect='auto');
 # plt.subplot(1,3,2);
@@ -90,7 +90,7 @@ mypar['inv']=True;
 mypar['onlysrc']=False;
 mypar['onlyvel']=True;
 mypar['niter']=10;
-data=np.load('datas.npy')
+# data=np.load('datas.npy')
 print(vel_s.shape,q.shape,wavelet.shape,src.shape,data.shape)
 data2,vinv,grad,src2,mwt=pfwi(vel_s,q,wavelet,src=src,data=data,mode=4,media=1,inv=0,verb=1,par=mypar);
 print('Vinv.shape:',vinv.shape)
@@ -115,7 +115,7 @@ plt.title("%d Iterations"%par['niter']); plt.ylabel("Depth (km)"); plt.xlabel("L
 plt.savefig(fname='test_pfwi_vel2d_vel.png',format='png',dpi=300)
 plt.show()
 
-#
+## generate synthetic data
 mypar['inv']=False;
 mypar['onlysrc']=False;
 mypar['onlyvel']=False;
@@ -137,13 +137,13 @@ plt.show()
 plt.figure(figsize=(12, 8))
 plt.subplot(1,6,1);
 plt.imshow(data[:,:,0],aspect='auto',clim=(-0.5, 0.5),extent=[0,par['dx']*(par['nx']-1),par['dt']*(par['nt']-1),0]);
-plt.title("Observed data"); plt.ylabel("Time (s)"); plt.xlabel("Receiver (m)"); 
+plt.title("Observed data"); plt.ylabel("Time (s)"); plt.xlabel("Receiver (km)"); 
 plt.subplot(1,6,2);
 plt.imshow(data2[:,:,0],aspect='auto',clim=(-0.5, 0.5),extent=[0,par['dx']*(par['nx']-1),par['dt']*(par['nt']-1),0]);
-plt.title("Simulated data"); plt.gca().set_yticks([]); plt.xlabel("Receiver (m)"); 
+plt.title("Simulated data"); plt.gca().set_yticks([]); plt.xlabel("Receiver (km)"); 
 plt.subplot(1,6,3);
 plt.imshow(data[:,:,0]-data[:,:,0],aspect='auto',clim=(-0.5, 0.5),extent=[0,par['dx']*(par['nx']-1),par['dt']*(par['nt']-1),0]);
-plt.title("Difference"); plt.gca().set_yticks([]); plt.xlabel("Receiver (m)"); 
+plt.title("Difference"); plt.gca().set_yticks([]); plt.xlabel("Receiver (km)"); 
 # plt.savefig(fname='test_pfwi_vel2d_data.png',format='png',dpi=300)
 
 plt.subplot(4,2,2);
