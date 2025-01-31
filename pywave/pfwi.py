@@ -28,12 +28,62 @@ def pfwi(vel,q,wav,src,data=None,mode=1,media=1,inv=0,verb=1,nb=60,coef=0.005,ac
 	
 	par=fillpar(par) #fill blank keywords using default values
 
-	if mode==1:
-		pass
+	if mode==1:		#modeling
+			print('start modeling in python')
+			vel=vel.flatten(order='F').astype(np.float32);
+			q=q.flatten(order='F').astype(np.float32);
+			wav=wav.flatten(order='F').astype(np.float32);
+			datasrc=src.flatten(order='F').astype(np.float32);  #combined datasrc
+			print('data flattening done in python')
+			#if mwt (model weight) is not considered right now
+
+			pararray=np.array([
+			par['nz'],
+			par['nx'],
+			par['dz'],
+			par['dx'],
+			par['oz'],
+			par['ox'],
+			par['nt'],
+			par['dt'],
+			par['ot'],
+			par['inv'],
+			par['ns'],
+			par['ds'],
+			par['os'],
+			par['sz'],
+			par['nb'],				#boundary width
+			par['coef'],			#absorbing boundary coefficient
+			par['f0'],				#reference frequency
+			par['acqui_type'],		#1, fixed acquisition; 
+			par['interval'],		#wavefield storing interval
+			par['niter']			#number of inversion iterations
+			],dtype=np.float32)
+			
+			print('par:',par)
+			print('len(pararray)',len(pararray))
+			
+# 			data=lstric(vel, q, wav, datasrc, pararray); #modeling, #array can be constructed internally
+# 			data=lstric(pararray); #modeling, #array can be constructed internally
+		
+		if media==1:
+			data=forward_modeling_ac(vel, q, wav, datasrc, pararray);
+		else: 
+			data=forward_modelingc(Fdat, &mpipar, soupar, acpar, array, verb);
+		
+		data=data.reshape(par['nt'],par['nx'],par['ns'],order='F')
+		vinv=[];grad=[];mwt=[];src=[];
+		
 	elif mode==2:
-		pass
-	elif mode==3:
-		pass
+
+		fwic(Fdat, Finv, Fgrad, &mpipar, soupar, acpar, array, fwipar, optpar, verb, media);
+		
+	elif mode==3:  #RTM
+		if media==1: 
+			rtm_ac(Fdat, Fimg, &mpipar, soupar, acpar, array, verb);
+		else: 
+			rtmc(Fdat, Fimg, &mpipar, soupar, acpar, array, verb);
+		
 	elif mode==4:
 		if par['inv']==True:
 			if par['onlysrc']==True:
