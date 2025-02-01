@@ -21,7 +21,7 @@
 
 #include "wave_fwi.h"
 #include "wave_fwiutil.h"
-
+#include "wave_fwimodeling.h"
 
 static PyObject *forward_modeling_ac(PyObject *self, PyObject *args){
     
@@ -81,7 +81,7 @@ static PyObject *forward_modeling_ac(PyObject *self, PyObject *args){
     int ifsnaps;
     
     /*data and parameters interface*/
-	PyArg_ParseTuple(args, "OOOOO", &f1,&f2,&f3,&f4,&f5);
+	PyArg_ParseTuple(args, "OOOO", &f1,&f2,&f3,&f4);
 // 	PyArg_ParseTuple(args, "O", &f5);
 	printf("Check 1\n");
 // 	printf("tri=%d,nt=%d,nx=%d,nz=%d,ns=%d\n",tri,nt,nx,nz,ns);
@@ -94,7 +94,7 @@ static PyObject *forward_modeling_ac(PyObject *self, PyObject *args){
     arrf2 = PyArray_FROM_OTF(f2, NPY_FLOAT, NPY_IN_ARRAY);
     arrf3 = PyArray_FROM_OTF(f3, NPY_FLOAT, NPY_IN_ARRAY);
     arrf4 = PyArray_FROM_OTF(f4, NPY_FLOAT, NPY_IN_ARRAY);
-    arrf5 = PyArray_FROM_OTF(f5, NPY_FLOAT, NPY_IN_ARRAY);
+//     arrf5 = PyArray_FROM_OTF(f5, NPY_FLOAT, NPY_IN_ARRAY);
     
 //     nd2=PyArray_NDIM(arrf1);
 //     
@@ -219,7 +219,7 @@ static PyObject *forward_modeling_ac(PyObject *self, PyObject *args){
 	printf("Check 3\n");
     for (i=0; i<25; i++)
     {
-        pararray[i]=*((float*)PyArray_GETPTR1(arrf5,i));
+        pararray[i]=*((float*)PyArray_GETPTR1(arrf4,i));
     }
 			
 	printf("Check 4\n");
@@ -266,19 +266,19 @@ static PyObject *forward_modeling_ac(PyObject *self, PyObject *args){
         wav[i]=*((float*)PyArray_GETPTR1(arrf3,i));
     }
     
-    if(inv)
-    {
-    	src=np_floatalloc4(nz,nx,nt,ns);
+//     if(inv)
+//     {
+//     	src=np_floatalloc4(nz,nx,nt,ns);
+//     	data=np_floatalloc3(nt,nx,ns);
+//     	for (i=0;i<nx*nt*ns;i++)
+//     		data[0][0][i]=*((float*)PyArray_GETPTR1(arrf4,i));
+//     	
+//     }else{
     	data=np_floatalloc3(nt,nx,ns);
-    	for (i=0;i<nx*nt*ns;i++)
-    		data[0][0][i]=*((float*)PyArray_GETPTR1(arrf4,i));
-    	
-    }else{
-    	data=np_floatalloc3(nt,nx,ns);
-    	src=np_floatalloc4(nz,nx,nt,ns);
-    	for (i=0;i<nz*nx*nt*ns;i++)
-    		src[0][0][0][i]=*((float*)PyArray_GETPTR1(arrf4,i));
-    }
+//     	src=np_floatalloc4(nz,nx,nt,ns);
+//     	for (i=0;i<nz*nx*nt*ns;i++)
+//     		src[0][0][0][i]=*((float*)PyArray_GETPTR1(arrf4,i));
+//     }
 
 	np_sou soupar;
 	np_acqui acpar;
@@ -337,14 +337,16 @@ static PyObject *forward_modeling_ac(PyObject *self, PyObject *args){
 // 	sum=sum+src[0][0][0][ii];
 // 	printf("before sum=%g\n",sum);
 	
-    lstri(data, mwt, src, acpar, array, paspar, verb);
+//     lstri(data, mwt, src, acpar, array, paspar, verb);
+    
+    forward_modeling_a(data, soupar, acpar, array, verb);
     
 // 	sum=0;
 // 	for(int ii=0;ii<acpar->nt*acpar->nz*acpar->nx;ii++)
 // 	sum=sum+src[0][0][0][ii];
 // 	printf("before sum=%g\n",sum);
     
-	printf("Doing TRI, reading data done\n");
+	printf("Doing Modeling, reading data done\n");
 //     }
 
 // 	if(tri==0)
@@ -461,22 +463,22 @@ static PyObject *forward_modeling_ac(PyObject *self, PyObject *args){
 // 	else
 // 	nwfd=0;
 	
-	if(inv)
-	{
-	dims[0]=nt*nx*nz*ns;dims[1]=1;
-	vecout=(PyArrayObject *) PyArray_SimpleNew(1,dims,NPY_FLOAT);
-	
-	for(i=0;i<nt*nx*nz*ns;i++)
-		(*((float*)PyArray_GETPTR1(vecout,i))) = src[0][0][0][i];
-	}
-	else
-	{
+// 	if(inv)
+// 	{
+// 	dims[0]=nt*nx*nz*ns;dims[1]=1;
+// 	vecout=(PyArrayObject *) PyArray_SimpleNew(1,dims,NPY_FLOAT);
+// 	
+// 	for(i=0;i<nt*nx*nz*ns;i++)
+// 		(*((float*)PyArray_GETPTR1(vecout,i))) = src[0][0][0][i];
+// 	}
+// 	else
+// 	{
 	dims[0]=nt*nx*ns;dims[1]=1;
 	vecout=(PyArrayObject *) PyArray_SimpleNew(1,dims,NPY_FLOAT);
 	
 	for(i=0;i<nt*nx*ns;i++)
 		(*((float*)PyArray_GETPTR1(vecout,i))) = data[0][0][i];
-	}
+// 	}
 
 		
 // 	if(jsnap>0)
@@ -1504,7 +1506,7 @@ static char pfwicfun_document[] = "Document stuff for this C module: passive ful
 /*defining our functions like below:
   function_name, function, METH_VARARGS flag, function documents*/
 static PyMethodDef functions[] = {
-  {"forward_modeling_ac"}, forward_modeling_ac, METH_VARARGS, pfwicfun_document},
+  {"forward_modeling_ac", forward_modeling_ac, METH_VARARGS, pfwicfun_document},
   {"lstric", lstric, METH_VARARGS, pfwicfun_document},
   {"pfwic", pfwic, METH_VARARGS, pfwicfun_document},
   {NULL, NULL, 0, NULL}

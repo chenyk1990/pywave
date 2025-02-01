@@ -33,7 +33,7 @@ def pfwi(vel,q,wav,src,data=None,mode=1,media=1,inv=0,verb=1,nb=60,coef=0.005,ac
 			vel=vel.flatten(order='F').astype(np.float32);
 			q=q.flatten(order='F').astype(np.float32);
 			wav=wav.flatten(order='F').astype(np.float32);
-			datasrc=src.flatten(order='F').astype(np.float32);  #combined datasrc
+# 			datasrc=src.flatten(order='F').astype(np.float32);  #combined datasrc
 			print('data flattening done in python')
 			#if mwt (model weight) is not considered right now
 
@@ -66,23 +66,24 @@ def pfwi(vel,q,wav,src,data=None,mode=1,media=1,inv=0,verb=1,nb=60,coef=0.005,ac
 # 			data=lstric(vel, q, wav, datasrc, pararray); #modeling, #array can be constructed internally
 # 			data=lstric(pararray); #modeling, #array can be constructed internally
 		
-		if media==1:
-			data=forward_modeling_ac(vel, q, wav, datasrc, pararray);
-		else: 
-			data=forward_modelingc(Fdat, &mpipar, soupar, acpar, array, verb);
+			if media==1:
+				data=forward_modeling_ac(vel, q, wav, pararray);
+			else: 
+				data=forward_modelingc(vel, q, wav, pararray);
 		
-		data=data.reshape(par['nt'],par['nx'],par['ns'],order='F')
-		vinv=[];grad=[];mwt=[];src=[];
+			data=data.reshape(par['nt'],par['nx'],par['ns'],order='F')
+			vinv=[];grad=[];mwt=[];src=[];
 		
 	elif mode==2:
-
-		fwic(Fdat, Finv, Fgrad, &mpipar, soupar, acpar, array, fwipar, optpar, verb, media);
+			pass
+# 		fwic(Fdat, Finv, Fgrad, mpipar, soupar, acpar, array, fwipar, optpar, verb, media);
 		
 	elif mode==3:  #RTM
-		if media==1: 
-			rtm_ac(Fdat, Fimg, &mpipar, soupar, acpar, array, verb);
-		else: 
-			rtmc(Fdat, Fimg, &mpipar, soupar, acpar, array, verb);
+		pass
+# 		if media==1: 
+# 			rtm_ac(Fdat, Fimg, &mpipar, soupar, acpar, array, verb);
+# 		else: 
+# 			rtmc(Fdat, Fimg, &mpipar, soupar, acpar, array, verb);
 		
 	elif mode==4:
 		if par['inv']==True:
