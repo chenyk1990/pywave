@@ -21,4 +21,13 @@ void gradient_pas_init(float ***data, float ****src, float ***mwt, np_sou soupar
 void gradient_pas_av(float *x, float *fcost, float *grad);
 /*< acoustic velocity gradient >*/
 
+void gradient_init(float ***data, np_sou soupar, np_acqui acpar, np_vec array, np_fwi fwipar, bool verb1);
+/*< initialize >*/
+
+void gradient_av(float *x, float *fcost, float *grad);
+/*< acoustic velocity gradient >*/
+
+void gradient_v(float *x, float *fcost, float *grad);
+/*< velocity gradient >*/
+
 #endif

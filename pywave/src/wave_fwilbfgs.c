@@ -107,6 +107,7 @@ void clip(float *x, int n, float min, float max)
 
 void line_search(int n, float *x, float *grad, float *direction, np_gradient gradient, np_optim opt, int *flag)
 /*< line search (Wolfe condition) >*/
+/*In the unconstrained minimization problem, the Wolfe conditions are a set of inequalities for performing inexact line search, especially in quasi-Newton methods, first published by Philip Wolfe in 1969.[1][2]*/
 {
 	int i, j;
 	float m1, m2, m3, fcost, alpha1=0., alpha2=0.;

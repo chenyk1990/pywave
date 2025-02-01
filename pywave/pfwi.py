@@ -75,8 +75,41 @@ def pfwi(vel,q,wav,src,data=None,mode=1,media=1,inv=0,verb=1,nb=60,coef=0.005,ac
 			vinv=[];grad=[];mwt=[];src=[];
 		
 	elif mode==2:
-			pass
-# 		fwic(Fdat, Finv, Fgrad, mpipar, soupar, acpar, array, fwipar, optpar, verb, media);
+			print('start FWI in python')
+			vel=vel.flatten(order='F').astype(np.float32); #vel is smoothed velocity
+			q=q.flatten(order='F').astype(np.float32);
+			wav=wav.flatten(order='F').astype(np.float32);
+			data=data.flatten(order='F').astype(np.float32);  #combined datasrc
+			print('data flattening done in python')
+			#if mwt (model weight) is not considered right now
+
+			pararray=np.array([
+			par['nz'],
+			par['nx'],
+			par['dz'],
+			par['dx'],
+			par['oz'],
+			par['ox'],
+			par['nt'],
+			par['dt'],
+			par['ot'],
+			par['inv'],
+			par['ns'],
+			par['ds'],
+			par['os'],
+			par['sz'],
+			par['nb'],				#boundary width
+			par['coef'],			#absorbing boundary coefficient
+			par['f0'],				#reference frequency
+			par['acqui_type'],		#1, fixed acquisition; 
+			par['interval'],		#wavefield storing interval
+			par['niter']			#number of inversion iterations
+			],dtype=np.float32)
+			
+			print('par:',par)
+			print('len(pararray)',len(pararray))
+			vinv=fwic(vel, q, wav, data, pararray); #in this case, vel is the smoothed model
+			vinv=vinv.reshape(par['nz'],par['nx'],par['niter'],order='F')
 		
 	elif mode==3:  #RTM
 		pass

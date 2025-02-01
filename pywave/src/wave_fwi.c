@@ -21,98 +21,102 @@
 #include "wave_memcpy.h"
 /*^*/
 
-// void fwi(np_file Fdat, np_file Finv, np_file Fgrad, np_sou soupar, np_acqui acpar, np_vec array, np_fwi fwipar, np_optim optpar, bool verb, int media)
-// /*< fwi >*/
-// {
-// 	int iter=0, flag;
-// 	int nz, nx, nzx, nm=0;
-// 	float fcost;
-// 	float *x=NULL, *direction, *grad;
-// 	np_gradient gradient=NULL;
+void fwi(float ***data, float **vinv, float *grad, np_sou soupar, np_acqui acpar, np_vec array, np_fwi fwipar, np_optim optpar, bool verb, int media)
+/*< fwi >*/
+{
+	int iter=0, flag;
+	int nz, nx, nzx, nm=0;
+	float fcost;
+	float *x=NULL, *direction;//, *grad;
+	np_gradient gradient=NULL;
 // 	FILE *fp=NULL;
-// 
-// 	nz=acpar->nz;
-// 	nx=acpar->nx;
-// 	nzx=nz*nx;
-// 
-// 	/* gradient type */
-// 	if(fwipar->grad_type==1) {
-// 		if(media==1) gradient=gradient_av;
-// 		else gradient=gradient_v;
-// 		nm=nzx;
-// 		x=array->vv;
-// 	}
-// 
-// 	/* initialize */
-// 	gradient_init(Fdat, soupar, acpar, array, fwipar, verb);
-// 
-// 	/* calculate first gradient */
-// 	grad=np_floatalloc(nm);
-// 	gradient(x, &fcost, grad);
-// 
-// 	/* output first gradient */
+
+	nz=acpar->nz;
+	nx=acpar->nx;
+	nzx=nz*nx;
+
+	/* gradient type */
+	if(fwipar->grad_type==1) {
+		if(media==1) gradient=gradient_av;
+		else gradient=gradient_v;
+		nm=nzx;
+		x=array->vv;
+	}
+	
+	/* initialize */
+	gradient_init(data, soupar, acpar, array, fwipar, verb);
+
+	/* initialize */
+// 	gradient_pas_init(data, src, mwt, soupar, acpar, array, fwipar, paspar, verb);/*mwt is source model weight*/
+	
+	/* calculate first gradient */
+	grad=np_floatalloc(nm);
+	gradient(x, &fcost, grad);
+
+	/* output first gradient */
 // 	if(mpipar->cpuid==0) np_floatwrite(grad, nm, Fgrad);
-// 
-// 	if(fwipar->onlygrad) return; // program terminates 
-// 
-// 	if(mpipar->cpuid==0) fp=fopen("iterate.txt","a");
-// 	direction=np_floatalloc(nm);
-// 	optpar->sk=np_floatalloc2(nm, optpar->npair);
-// 	optpar->yk=np_floatalloc2(nm, optpar->npair);
-// 
-// 	optpar->igrad=0;
-// 	optpar->ipair=0;
-// 	optpar->alpha=1.;
-// 	optpar->ils=0;
-// 	optpar->fk=fcost;
-// 	optpar->f0=fcost;
+
+	if(fwipar->onlygrad) return; // program terminates 
+
+	direction=np_floatalloc(nm);
+	optpar->sk=np_floatalloc2(nm, optpar->npair);
+	optpar->yk=np_floatalloc2(nm, optpar->npair);
+
+	optpar->igrad=0;
+	optpar->ipair=0;
+	optpar->alpha=1.;
+	optpar->ils=0;
+	optpar->fk=fcost;
+	optpar->f0=fcost;
 // 	if(mpipar->cpuid==0){
-// 		l2norm(nm, grad, &optpar->gk_norm);
+		l2norm(nm, grad, &optpar->gk_norm);
 // 		print_iteration(fp, iter, optpar);
 // 	}
-// 
-// 	/* optimization loop */
-// 	for(iter=0; iter<optpar->niter; iter++){
-// 		if(mpipar->cpuid==0) np_warning("--------iter=%d---------", iter);
-// 
-// 		optpar->ils=0;
-// 
-// 		//reverse(nm, grad, direction);
-// 		if(iter==0){
-// 			reverse(nm, grad, direction);
-// 		}else{
-// 			lbfgs_update(nm, x, grad, optpar->sk, optpar->yk, optpar);
-// 			lbfgs_direction(nm, grad, direction, optpar->sk, optpar->yk, optpar);
-// 		} 
-// 
-// 		lbfgs_save(nm, x, grad, optpar->sk, optpar->yk, optpar);
-// 		line_search(nm, x, grad, direction, gradient, optpar, &flag, mpipar->cpuid);
-// 		
+
+	/* optimization loop */
+	for(iter=0; iter<optpar->niter; iter++){
+// 		if(mpipar->cpuid==0) 
+		printf("--------iter=%d---------\n", iter);
+
+		optpar->ils=0;
+
+		//reverse(nm, grad, direction);
+		if(iter==0){
+			reverse(nm, grad, direction);
+		}else{
+			lbfgs_update(nm, x, grad, optpar->sk, optpar->yk, optpar);
+			lbfgs_direction(nm, grad, direction, optpar->sk, optpar->yk, optpar);
+		} 
+
+		lbfgs_save(nm, x, grad, optpar->sk, optpar->yk, optpar);
+		line_search(nm, x, grad, direction, gradient, optpar, &flag);
+		
 // 		if(mpipar->cpuid==0){
-// 			l2norm(nm, grad, &optpar->gk_norm);
+			l2norm(nm, grad, &optpar->gk_norm);
 // 			print_iteration(fp, iter+1, optpar);
 // 		}
-// 
-// 		if(flag==2){
-// 			printf("Line Search Failed\n");
-// 			break;
-// 		}
-// 
-// 		if(optpar->fk/optpar->f0 < optpar->conv_error){
-// 			printf("Convergence Criterion Reached\n");
-// 			break;
-// 		}
-// 	} // end of iter
-// 
-// 	if(iter==optpar->niter){
-// 		printf("Maximum Iteration Number Reached\n");
-// 	}
-// 
+
+		if(flag==2){
+			printf("Line Search Failed\n");
+			break;
+		}
+
+		if(optpar->fk/optpar->f0 < optpar->conv_error){
+			printf("Convergence Criterion Reached\n");
+			break;
+            }
+        mcp(vinv[iter],x,0,0,nm); /*destination*/
+        } // end of iter
+
+	if(iter==optpar->niter){
+		printf("Maximum Iteration Number Reached\n");
+	}
+
 // 	if(mpipar->cpuid==0){
 // 		np_floatwrite(x, nm, Finv);
 // 	}
 // 	if(mpipar->cpuid==0) fclose(fp);
-// }
+}
 
 void lstri(float ***data, float ***mwt, float ****src, np_acqui acpar, np_vec array, np_pas paspar, bool verb)
 /*< passive source inversion >*/

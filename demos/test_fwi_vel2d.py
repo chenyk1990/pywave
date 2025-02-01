@@ -74,8 +74,12 @@ mypar={'nz':130, 'nx':334, 'dz': 0.008, 'dx': 0.012, 'oz': 0, 'ox': 0, 'ns': 3,
 mypar['inv']=True;
 mypar['onlysrc']=True;
 mypar['niter']=30;
-# data=np.load('datas.npy')
-data2,vinv,grad,src,mwt=pfwi(vel,q,wavelet,src=None,data=None,mode=1,media=1,inv=0,verb=1,par=mypar);
+# data,vinv,grad,src,mwt=pfwi(vel,q,wavelet,src=None,data=None,mode=1,media=1,inv=0,verb=1,par=mypar);
+# np.save('fwi-datas.npy',data)
+
+data=np.load('fwi-datas.npy')
+data2,vinv,grad,src,mwt=pfwi(vel_s,q,wavelet,src=None,data=data,mode=2,media=1,inv=0,verb=1,par=mypar);
+
 
 # data=data2;
 # plt.subplot(1,3,1);
@@ -85,9 +89,23 @@ data2,vinv,grad,src,mwt=pfwi(vel,q,wavelet,src=None,data=None,mode=1,media=1,inv
 # plt.subplot(1,3,3);
 # plt.imshow(data[:,:,2],aspect='auto');
 # plt.show()
+# 
 
-
-
+plt.figure(figsize=(8, 10))
+plt.subplot(4,1,1);
+plt.imshow(vel,cmap=plt.jet(),aspect='auto',clim=(1.5, 4.5), extent=[0,par['dx']*(par['nx']-1),par['dz']*(par['nz']-1),0]); 
+plt.title("Ground truth"); plt.ylabel("Depth (km)"); plt.gca().set_xticks([]);
+plt.subplot(4,1,2);
+plt.imshow(vel_s,aspect='auto',clim=(1.5, 3.5), extent=[0,par['dx']*(par['nx']-1),par['dz']*(par['nz']-1),0]); 
+plt.title("Initial model"); plt.ylabel("Depth (km)"); plt.gca().set_xticks([]);
+plt.subplot(4,1,3);
+plt.imshow(vinv[:,:,int(par['niter']/2)],aspect='auto',clim=(1.5, 3.5), extent=[0,par['dx']*(par['nx']-1),par['dz']*(par['nz']-1),0]);
+plt.title("%d Iterations"%int(par['niter']/2));plt.ylabel("Depth (km)"); plt.gca().set_xticks([]);
+plt.subplot(4,1,4);
+plt.imshow(vinv[:,:,par['niter']-1],aspect='auto',clim=(1.5, 3.5), extent=[0,par['dx']*(par['nx']-1),par['dz']*(par['nz']-1),0]);
+plt.title("%d Iterations"%par['niter']); plt.ylabel("Depth (km)"); plt.xlabel("Lateral (km)"); 
+plt.savefig(fname='test_pfwi_vel2d_vel.png',format='png',dpi=300)
+plt.show()
 
 
 
