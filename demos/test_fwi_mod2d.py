@@ -55,7 +55,7 @@ plt.plot(wavelet);plt.show()
 # plt.show()
 
 ## generate data
-mypar={'nz':130, 'nx':334, 'dz': 0.008, 'dx': 0.012, 'oz': 0, 'ox': 0, 'ns': 3,
+mypar={'nz':130, 'nx':334, 'dz': 0.008, 'dx': 0.012, 'oz': 0, 'ox': 0, 'ns': 20, 'ds': 0.2,
 		'nt': 3001, 'dt': 0.001, 'ot': 0, 'nb':60, 'coef': 0.005, 'acqui_type': 1, 
 		'inv': 0, 'waterz': -30, 'onlysrc': 0, 'onlyvel': 1, 'conv_error': 0.01, 'niter': 30}
 
@@ -74,19 +74,36 @@ mypar={'nz':130, 'nx':334, 'dz': 0.008, 'dx': 0.012, 'oz': 0, 'ox': 0, 'ns': 3,
 mypar['inv']=True;
 mypar['onlysrc']=True;
 mypar['niter']=30;
-# data=np.load('datas.npy')
-data2,vinv,grad,src,mwt=pfwi(vel,q,wavelet,src=None,data=None,mode=1,media=1,inv=0,verb=1,par=mypar);
+# data,vinv,grad,src,mwt=pfwi(vel,q,wavelet,src=None,data=None,mode=1,media=1,inv=0,verb=1,par=mypar);
+# np.save('fwi-datas-%d.npy'%mypar['ns'],data)
 
-# data=data2;
-# plt.subplot(1,3,1);
-# plt.imshow(data[:,:,0],aspect='auto');
-# plt.subplot(1,3,2);
-# plt.imshow(data[:,:,1],aspect='auto');
-# plt.subplot(1,3,3);
-# plt.imshow(data[:,:,2],aspect='auto');
-# plt.show()
+data=np.load('fwi-datas-%d.npy'%mypar['ns'])
 
+par=mypar
+plt.figure(figsize=(12, 8))
+plt.subplot(1,6,1);
+plt.imshow(data[:,:,0],aspect='auto',clim=(-0.5, 0.5),extent=[0,par['dx']*(par['nx']-1),par['dt']*(par['nt']-1),0]);
+plt.title("Shot 1"); plt.ylabel("Time (s)"); plt.xlabel("Receiver (km)"); 
+plt.subplot(1,6,2);
+plt.imshow(data[:,:,4],aspect='auto',clim=(-0.5, 0.5),extent=[0,par['dx']*(par['nx']-1),par['dt']*(par['nt']-1),0]);
+plt.title("Shot 5"); plt.gca().set_yticks([]); plt.xlabel("Receiver (km)"); 
+plt.subplot(1,6,3);
+plt.imshow(data[:,:,8],aspect='auto',clim=(-0.5, 0.5),extent=[0,par['dx']*(par['nx']-1),par['dt']*(par['nt']-1),0]);
+plt.title("Shot 9"); plt.gca().set_yticks([]); plt.xlabel("Receiver (km)"); 
 
+plt.subplot(1,6,4);
+plt.imshow(data[:,:,12],aspect='auto',clim=(-0.5, 0.5),extent=[0,par['dx']*(par['nx']-1),par['dt']*(par['nt']-1),0]);
+plt.title("Shot 13"); plt.gca().set_yticks([]);plt.xlabel("Receiver (km)"); 
+plt.subplot(1,6,5);
+plt.imshow(data[:,:,15],aspect='auto',clim=(-0.5, 0.5),extent=[0,par['dx']*(par['nx']-1),par['dt']*(par['nt']-1),0]);
+plt.title("Shot 16"); plt.gca().set_yticks([]); plt.xlabel("Receiver (km)"); 
+plt.subplot(1,6,6);
+plt.imshow(data[:,:,19],aspect='auto',clim=(-0.5, 0.5),extent=[0,par['dx']*(par['nx']-1),par['dt']*(par['nt']-1),0]);
+plt.title("Shot 20"); plt.gca().set_yticks([]); plt.xlabel("Receiver (km)"); 
+
+plt.savefig(fname='test_pfwi_vel2d_data.png',format='png',dpi=300)
+
+plt.show()
 
 
 

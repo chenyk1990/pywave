@@ -107,5 +107,28 @@ plt.title("%d Iterations"%par['niter']); plt.ylabel("Depth (km)"); plt.xlabel("L
 plt.savefig(fname='test_fwi_vel2d_vel.png',format='png',dpi=300)
 plt.show()
 
+np.save('fwi-vels-%d.npy'%mypar['niter'],vinv)
+
+### Synthetic again
+
+data2,vinv2,grad2,src2,mwt2=pfwi(vinv[:,:,-1],q,wavelet,src=src,data=data,mode=1,media=1,inv=0,verb=1,par=mypar);
+# plt.subplot(1,3,1);
+# plt.imshow(data[:,:,0],aspect='auto',clim=(-0.5, 0.5),extent=[0,par['dx']*(par['nx']-1),par['dt']*(par['nt']-1),0]);
+# plt.title("Observed data"); plt.ylabel("Time (s)"); plt.xlabel("Receiver (m)"); 
+# plt.subplot(1,3,2);
+# plt.imshow(data2[:,:,0],aspect='auto',clim=(-0.5, 0.5),extent=[0,par['dx']*(par['nx']-1),par['dt']*(par['nt']-1),0]);
+# plt.title("Simulated data"); plt.gca().set_yticks([]); plt.xlabel("Receiver (m)"); 
+# plt.subplot(1,3,3);
+# plt.imshow(data[:,:,0]-data2[:,:,0],aspect='auto',clim=(-0.5, 0.5),extent=[0,par['dx']*(par['nx']-1),par['dt']*(par['nt']-1),0]);
+# plt.title("Difference"); plt.gca().set_yticks([]); plt.xlabel("Receiver (m)"); 
+# plt.savefig(fname='test_pfwi_vel2d_data.png',format='png',dpi=300)
+# plt.show()
+
+
+
+
+
+
+
 
 
