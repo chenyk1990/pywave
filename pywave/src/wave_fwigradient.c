@@ -155,7 +155,7 @@ void gradient_av(float *x, float *fcost, float *grad)
 		wit=0;
 		/* forward propagation */
 		for(it=0; it<nt; it++){
-			if(verb) printf("Forward propagation is=%d; it=%d;\n", is+1, it);
+// 			if(verb) printf("Forward propagation is=%d; it=%d;\n", is+1, it);
 
 			/* output predicted data */
 			for(ir=0; ir<nr2[is]; ir++){
@@ -214,7 +214,7 @@ void gradient_av(float *x, float *fcost, float *grad)
 				pp[ir][it] *= weight[ir][it];
 			}
 		}
-		is++;
+// 		is++;
 
 		/* initialization */
 		memset(p0[0], 0., padnzx*sizeof(float));
@@ -224,7 +224,7 @@ void gradient_av(float *x, float *fcost, float *grad)
 		
 		/* backward propagation */
 		for(it=nt-1; it>=0; it--){
-			if(verb) printf("Backward propagation is=%d; it=%d;\n", is+1, it);
+// 			if(verb) printf("Backward propagation is=%d; it=%d;\n", is+1, it);
 			
 			/* laplacian operator */
 			laplace(p1, term, padnx, padnz, dx2, dz2);
@@ -364,7 +364,7 @@ void gradient_v(float *x, float *fcost, float *grad)
 		wit=0;
 		/* forward propagation */
 		for(it=0; it<nt; it++){
-			if(verb) printf("Forward propagation is=%d; it=%d;", is+1, it);
+// 			if(verb) printf("Forward propagation is=%d; it=%d;", is+1, it);
 
 			/* output predicted data */
 			for(ir=0; ir<nr2[is]; ir++){
@@ -430,7 +430,7 @@ void gradient_v(float *x, float *fcost, float *grad)
 		
 		/* backward propagation */
 		for(it=nt-1; it>=0; it--){
-			if(verb) printf("Backward propagation is=%d; it=%d;", is+1, it);
+// 			if(verb) printf("Backward propagation is=%d; it=%d;", is+1, it);
 
 			/* calculate and load r term */
 			for(ix=4; ix<padnx-4; ix++){

@@ -110,7 +110,7 @@ def pfwi(vel,q,wav,src,data=None,mode=1,media=1,inv=0,verb=1,nb=60,coef=0.005,ac
 			print('len(pararray)',len(pararray))
 			vinv=fwic(vel, q, wav, data, pararray); #in this case, vel is the smoothed model
 			vinv=vinv.reshape(par['nz'],par['nx'],par['niter'],order='F')
-		
+			src=None;mwt=None;grad=None;
 	elif mode==3:  #RTM
 		pass
 # 		if media==1: 
