@@ -1,16 +1,3 @@
-/* Visco-acoustic gradient */
-
-// #include <rsf.h>
-// #include <mpi.h>
-// #include "Qfwi_commons.h"
-// #include "triutil.h"
-// #ifdef _OPENMP
-// #include <omp.h>
-// #endif
-// #include <time.h>
-// #include <stdlib.h>
-// /*^*/
-
 #include "wave_bigsolver.h"
 #include "wave_triutil.h"
 #include "wave_fwiutil.h"
@@ -82,19 +69,7 @@ void gradient_init(float ***data, np_sou soupar, np_acqui acpar, np_vec array, n
 	ww=array->ww;
 	bc=acpar->bc;
 	
-	/* read data */
-// 	if(ns%numprocs==0) ns=ns/numprocs;
-// 	else ns=ns/numprocs+1;
 	dd=data;
-// 	dd=np_floatalloc3(nt, nr, ns);
-// 	memset(dd[0][0], 0., nt*nr*ns*sizeof(float));
-// 	for(is=0; is<ns; is++){
-// 		is=is*numprocs+cpuid;
-// 		if(is<ns){
-// 			np_seek(Fdat, is*nr*nt*sizeof(float), SEEK_SET);
-// 			np_floatread(dd[is][0], nr*nt, Fdat);
-// 		}
-// 	}
 	
 	/* data residual weights */
 	wtn1=(wt1-acpar->t0)/dt+0.5;
@@ -265,37 +240,6 @@ void gradient_av(float *x, float *fcost, float *grad)
 			apply_sponge(p1, bc, padnx, padnz, nb);
 		} // end of time loop
 	}// end of shot loop
-// 	MPI_Barrier(comm);
-	
-	/* misfit reduction */
-// 	if(cpuid==0){
-// #if MPI_VERSION >= 2
-// 	    sendbuf=MPI_IN_PLACE;
-// #else /* will fail */
-// 	    sendbuf=NULL;
-// #endif
-// 		recvbuf=fcost;
-// 	}else{
-// 		sendbuf=fcost;
-// 		recvbuf=NULL;
-// 	}
-// 	MPI_Reduce(sendbuf, recvbuf, 1, MPI_FLOAT, MPI_SUM, 0, comm);
-// 	MPI_Bcast(fcost, 1, MPI_FLOAT, 0, comm);
-
-	/* gradient reduction */
-// 	if(cpuid==0){
-// #if MPI_VERSION >= 2	    
-// 		sendbuf=MPI_IN_PLACE;
-// #else /* will fail */
-// 		sendbuf=NULL;
-// #endif
-// 		recvbuf=grad;
-// 	}else{
-// 		sendbuf=grad;
-// 		recvbuf=NULL;
-// 	}
-// 	MPI_Reduce(sendbuf, recvbuf, nzx, MPI_FLOAT, MPI_SUM, 0, comm);
-// 	MPI_Bcast(grad, nzx, MPI_FLOAT, 0, comm);
 
 	/* scaling gradient */
 	if(first){
@@ -484,37 +428,6 @@ void gradient_v(float *x, float *fcost, float *grad)
 			apply_sponge(r1, bc, padnx, padnz, nb);
 		} // end of time loop
 	}// end of shot loop
-// 	MPI_Barrier(comm);
-	
-	/* misfit reduction */
-// 	if(cpuid==0){
-// #if MPI_VERSION >= 2	    
-// 		sendbuf=MPI_IN_PLACE;
-// #else /* will fail */
-// 		sendbuf=NULL;
-// #endif
-// 		recvbuf=fcost;
-// 	}else{
-// 		sendbuf=fcost;
-// 		recvbuf=NULL;
-// 	}
-// 	MPI_Reduce(sendbuf, recvbuf, 1, MPI_FLOAT, MPI_SUM, 0, comm);
-// 	MPI_Bcast(fcost, 1, MPI_FLOAT, 0, comm);
-
-	/* gradient reduction */
-// 	if(cpuid==0){
-// #if MPI_VERSION >= 2		    
-// 		sendbuf=MPI_IN_PLACE;
-// #else /* will fail */
-// 		sendbuf=NULL;
-// #endif		
-// 		recvbuf=grad;
-// 	}else{
-// 		sendbuf=grad;
-// 		recvbuf=NULL;
-// 	}
-// 	MPI_Reduce(sendbuf, recvbuf, nzx, MPI_FLOAT, MPI_SUM, 0, comm);
-// 	MPI_Bcast(grad, nzx, MPI_FLOAT, 0, comm);
 
 	/* scaling gradient */
 	if(first){
@@ -931,15 +844,6 @@ void gradient_pas_av(float *x, float *fcost, float *grad)
 
 //             is++;
 
-            /*
-            // JS
-            if(is==0 && counter==3){
-            np_fileclose(Fwfl1);
-            np_fileclose(Fwfl2);
-            np_fileclose(Fres);
-            }
-            printf("---counter=%d fcost=%3.3e---",counter, *fcost);
-            */
         } // end of shot loop
 
 	/* misfit reduction */
