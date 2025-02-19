@@ -60,8 +60,8 @@ mypar={'nz':130, 'nx':334, 'dz': 0.008, 'dx': 0.012, 'oz': 0, 'ox': 0, 'ns': 3,
 		'inv': 0, 'waterz': -30, 'onlysrc': 0, 'onlyvel': 1, 'conv_error': 0.01, 'niter': 30}
 
 ## Modeling part
-# data,vinv,grad,src,mwt=pfwi(vel,q,wavelet,src,data=None,mode=4,media=1,inv=0,verb=1,par=mypar);
-# np.save('datas',data);
+data,vinv,grad,src,mwt=pfwi(vel,q,wavelet,src,data=None,mode=4,media=1,inv=0,verb=1,par=mypar);
+np.save('datas',data);
 # plt.subplot(1,3,1);
 # plt.imshow(data[:,:,0],aspect='auto');
 # plt.subplot(1,3,2);
