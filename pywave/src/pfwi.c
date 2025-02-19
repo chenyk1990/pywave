@@ -22,6 +22,7 @@
 #include "wave_fwi.h"
 #include "wave_fwiutil.h"
 #include "wave_fwimodeling.h"
+#include "wave_ntrianglen.h"
 
 static PyObject *forward_modeling_ac(PyObject *self, PyObject *args){
     
