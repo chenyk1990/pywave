@@ -2,10 +2,13 @@ from pywave import pfwi
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from pyseistr import binread,smooth
+from pyseistr import binread,smooth #pip install git+https://github.com/aaspip/pyseistr
+# DataPath
+#https://github.com/chenyk1990/cykd2/blob/master/various/cyksmall/marmvel.bin
 
 ## load velocity
-marmvel=binread(os.getenv('HOME')+'/chenyk.data2/various/cyksmall/marmvel.bin',n1=751,n2=2301)
+# marmvel=binread(os.getenv('HOME')+'/chenyk.data2/various/cyksmall/marmvel.bin',n1=751,n2=2301)
+marmvel=binread('marmvel.bin',n1=751,n2=2301)
 marmvel=marmvel*0.001;
 marmvel=marmvel[0:240,1250:2251];
 marmvel=marmvel[::2,::3]*1.8-1.2;
